@@ -22,7 +22,7 @@ object DataMerge {
 			tmpMap += x(1) -> tmpList
 			country_year += x(0) -> tmpMap
 		}
-
+		val reader2 = CSVReader.open(new File("data/"))
 		val tmp = country_year.getOrElse("Andorra",null)
 		println(tmp)
 		val tmpyear = tmp.getOrElse("2003",List[Any]())
@@ -63,7 +63,15 @@ object DataMerge {
 		val x = country_year.toList.sortBy(_._1)
 		var outList = List[List[Any]]()
 		for (y <- x) {
-			var tmp = List(y._1._1,y._1._2,0,0,0,0,0,0,0,0,0,0,y._2)
+			var tmp = List[Any]()
+			tmp = y._1._1 :: tmp
+			tmp = y._1._2 :: tmp
+			for (i <- 1 to 10) {
+				tmp = 'x' :: tmp
+			}
+			tmp = y._2 :: tmp
+			tmp = tmp.reverse
+			
 			//tmp.foreach(i => println(i))
 			outList = tmp :: outList
 		}
