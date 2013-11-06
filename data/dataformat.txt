@@ -1,1 +1,1 @@
-country,year,min age for marriage without consent female, min age male,female lit rate,male lit rate,x,x,x,x,x,x,teenage births
+country,year,min age for marriage without consent female, min age male,female lit rate,male lit rate,modern method,any method,ever married teen women, ever married teen man,mean marriage age,x,teenage births

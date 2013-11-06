@@ -4,17 +4,22 @@ import com.github.tototoshi.csv._
 
 object DataMerge {
 	var country_year = Map[String,Map[String,List[Any]]]()
+	val inFile = "data/out3.csv"
+	val outFile = "data/out4.csv"
 	def readCSV(csvFile: String) = {
 		loadCSV()
+		csv6()
+		//csv5()
 		//csv3()
+		//csv2()
 		//csv1()
-		csv4()
+		//csv4()
 		output()
 	}
 
 	def loadCSV() = {
 		import java.io._
-		val reader = CSVReader.open(new File("data/out1.csv"))
+		val reader = CSVReader.open(new File(inFile))
 		
 		for (x <- reader) {
 			var tmpList = List[Any]()
@@ -32,6 +37,81 @@ object DataMerge {
 		val tmpyear = tmp.getOrElse("2003",List[Any]())
 		//tmpyear.foreach(x => println(x))
 	
+	}
+
+	def csv6() = {
+		import java.io._
+		val reader = CSVReader.open(new File("data/marriageage.csv"))
+		for (x <- reader) {
+			var maleRate = ""
+			var femaleRate = ""
+			var tmpMap = country_year.getOrElse(x(0),Map[String,List[Any]]())
+			val newList = List("x","x","x","x","x","x","x","x","x","x","x","x")
+			if (x(1)!="") {
+				var tmpYear = tmpMap.getOrElse(x(1),newList)
+				if (x(2)=="Men"){
+					tmpYear = tmpYear.updated(8,x(3))
+					tmpYear = tmpYear.updated(10,x(4))
+					maleRate = x(3)
+				} else {
+ 					tmpYear = tmpYear.updated(7,x(3))
+ 					tmpYear = tmpYear.updated(9,x(4))
+					femaleRate = x(3)
+				}
+				//println(x(1))
+				tmpMap += x(1) -> tmpYear
+				country_year += x(0) -> tmpMap
+			}
+			/*
+			for (j <- tmpMap) {
+				var newJ2 = j._2
+				if (maleMin != "" && j._2(2)=="x") {
+					newJ2 = j._2.updated(2,maleMin)
+				} 
+				if (femaleMin != "" && j._2(1)=="x") {
+					newJ2 = j._2.updated(1,femaleMin)
+				}
+				tmpMap += j._1 -> newJ2
+			}*/
+			
+
+		}
+		
+		reader.close()
+	}
+
+	def csv5() {
+				import java.io._
+		val reader = CSVReader.open(new File("data/contraceptiveprevalencemethod.csv"))
+		for (x <- reader) {
+			var maleRate = ""
+			var femaleRate = ""
+			var tmpMap = country_year.getOrElse(x(0),Map[String,List[Any]]())
+			val newList = List("x","x","x","x","x","x","x","x","x","x","x","x")
+			if (x(1)!="") {
+				var tmpYear = tmpMap.getOrElse(x(1),newList)
+				tmpYear = tmpYear.updated(6,x(2))
+ 				tmpYear = tmpYear.updated(5,x(3))
+				//println(x(1))
+				tmpMap += x(1) -> tmpYear
+				country_year += x(0) -> tmpMap
+			}
+			/*
+			for (j <- tmpMap) {
+				var newJ2 = j._2
+				if (maleMin != "" && j._2(2)=="x") {
+					newJ2 = j._2.updated(2,maleMin)
+				} 
+				if (femaleMin != "" && j._2(1)=="x") {
+					newJ2 = j._2.updated(1,femaleMin)
+				}
+				tmpMap += j._1 -> newJ2
+			}*/
+			
+
+		}
+		
+		reader.close()
 	}
 
 	def csv4() = {
@@ -136,7 +216,7 @@ object DataMerge {
 		outList = outList.reverse
 		//outList.foreach(u => println(u))
 
-		val f = new File("data/out2.csv")
+		val f = new File(outFile)
 		val writer = CSVWriter.open(f)
 		writer.writeAll(outList)
 		writer.close()
@@ -144,7 +224,7 @@ object DataMerge {
 
 	def csv2() = {
 		import java.io._
-		val reader = CSVReader.open(new File("data/out.csv"))
+		val reader = CSVReader.open(new File("data/marriageage.csv"))
 		var set = Set[Any]()
 		for (x <- reader) {
 			set = set + x(0)
