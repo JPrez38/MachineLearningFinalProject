@@ -4,17 +4,79 @@ import com.github.tototoshi.csv._
 
 object DataMerge {
 	var country_year = Map[String,Map[String,List[Any]]]()
-	val inFile = "data/out3.csv"
-	val outFile = "data/out4.csv"
+	val inFile = "data/out5.csv"
+	val outFile = "data/out6.csv"
 	def readCSV(csvFile: String) = {
 		loadCSV()
-		csv6()
+		csv8()
 		//csv5()
 		//csv3()
 		//csv2()
 		//csv1()
 		//csv4()
 		output()
+	}
+	def csv8() = {
+		import java.io._
+		val reader = CSVReader.open(new File("data/femalemaleratio.csv"))
+		for (x <- reader) {
+			var maleRate = ""
+			var femaleRate = ""
+			var tmpMap = country_year.getOrElse(x(0),Map[String,List[Any]]())
+			val newList = List("x","x","x","x","x","x","x","x","x","x","x","x","x","x","x")
+			if (x(1)!="") {
+				var tmpYear = tmpMap.getOrElse(x(1),newList)
+				tmpYear = tmpYear.updated(12,x(2))
+				
+				tmpMap += x(1) -> tmpYear
+				country_year += x(0) -> tmpMap
+			}
+			/*
+			for (j <- tmpMap) {
+				var newJ2 = j._2
+				if (maleMin != "" && j._2(2)=="x") {
+					newJ2 = j._2.updated(2,maleMin)
+				} 
+				if (femaleMin != "" && j._2(1)=="x") {
+					newJ2 = j._2.updated(1,femaleMin)
+				}
+				tmpMap += j._1 -> newJ2
+			}*/
+			
+
+		}
+	}
+	def csv7() = {
+		import java.io._
+		val reader = CSVReader.open(new File("data/womensshareoflabourforce.csv"))
+		for (x <- reader) {
+			var maleRate = ""
+			var femaleRate = ""
+			var tmpMap = country_year.getOrElse(x(0),Map[String,List[Any]]())
+			val newList = List("x","x","x","x","x","x","x","x","x","x","x","x","x","x","x")
+			if (x(1)!="") {
+				var tmpYear = tmpMap.getOrElse(x(1),newList)
+				tmpYear = tmpYear.updated(11,x(2))
+				
+				tmpMap += x(1) -> tmpYear
+				country_year += x(0) -> tmpMap
+			}
+			/*
+			for (j <- tmpMap) {
+				var newJ2 = j._2
+				if (maleMin != "" && j._2(2)=="x") {
+					newJ2 = j._2.updated(2,maleMin)
+				} 
+				if (femaleMin != "" && j._2(1)=="x") {
+					newJ2 = j._2.updated(1,femaleMin)
+				}
+				tmpMap += j._1 -> newJ2
+			}*/
+			
+
+		}
+		
+		reader.close()
 	}
 
 	def loadCSV() = {
@@ -46,7 +108,7 @@ object DataMerge {
 			var maleRate = ""
 			var femaleRate = ""
 			var tmpMap = country_year.getOrElse(x(0),Map[String,List[Any]]())
-			val newList = List("x","x","x","x","x","x","x","x","x","x","x","x")
+			val newList = List("x","x","x","x","x","x","x","x","x","x","x","x","x","x","x")
 			if (x(1)!="") {
 				var tmpYear = tmpMap.getOrElse(x(1),newList)
 				if (x(2)=="Men"){
