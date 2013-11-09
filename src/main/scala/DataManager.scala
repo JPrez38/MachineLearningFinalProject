@@ -4,11 +4,13 @@ import com.github.tototoshi.csv._
 
 object DataMerge {
 	var country_year = Map[String,Map[String,List[Any]]]()
-	val inFile = "data/out5.csv"
-	val outFile = "data/out6.csv"
+	val inFile = "data/out7.csv"
+	val outFile = "data/out8.csv"
 	def readCSV(csvFile: String) = {
+		//fixBrokenCountries()
 		loadCSV()
-		csv8()
+		fixMinMarriageAge()
+		//csv8()
 		//csv5()
 		//csv3()
 		//csv2()
@@ -16,6 +18,62 @@ object DataMerge {
 		//csv4()
 		output()
 	}
+
+	def fixMinMarriageAge() {
+		for (x <- country_year) {
+			var country = country_year.getOrElse(x._1,Map[String,List[Any]]())
+			var femaleAge = "x"
+			var maleAge = "x"
+			for (y <- x._2){
+				if(y._2(1)!= "x") {
+					femaleAge=y._2(1).toString
+				}
+				if(y._2(2)!= "x") {
+					maleAge=y._2(2).toString
+				}
+			}
+			for (y <- x._2) {
+				var tmpMap = country.getOrElse(y._1,List[Any]())
+				if (tmpMap(1) == "x") {
+					tmpMap = tmpMap.updated(1,femaleAge)
+				}
+				if (tmpMap(2) == "x") {
+					tmpMap = tmpMap.updated(2,maleAge)
+				}
+				country += y._1 -> tmpMap	
+			}
+			country_year += x._1 -> country
+		}
+	}
+
+	def fixBrokenCountries() {
+		import java.io._
+		val reader = CSVReader.open(new File(inFile))
+		
+		for (x <- reader) {
+			var tmpList = List[Any]()
+			for (i <- 1 to x.size-1) {
+				tmpList = x(i) :: tmpList
+			}
+			tmpList = tmpList.reverse
+			var tmpMap = country_year.getOrElse(x(0),Map[String,List[Any]]())
+			val newList = List("x","x","x","x","x","x","x","x","x","x","x","x","x","x","x")
+			var tmp2List = tmpMap.getOrElse(x(1),newList)
+			for (i <- 0 to tmpList.length-1) {
+				if (tmp2List(i).toString=="x") {
+					tmp2List = tmp2List.updated(i,tmpList(i))
+				}
+			}
+			tmpMap += x(1) -> tmp2List
+			country_year += x(0) -> tmpMap
+		}
+		//val reader2 = CSVReader.open(new File("data/"))
+		val tmp = country_year.getOrElse("Andorra",null)
+		//println(tmp)
+		val tmpyear = tmp.getOrElse("2003",List[Any]())
+		//tmpyear.foreach(x => println(x))
+	}
+
 	def csv8() = {
 		import java.io._
 		val reader = CSVReader.open(new File("data/femalemaleratio.csv"))
