@@ -1,13 +1,13 @@
 package main
 
-import com.github.tototoshi.csv._,
+import com.github.tototoshi.csv._
 import java.io._
 /*
  * heavily modified nearest neighbor algorithm to
  * fill data gaps by averaging together the "k"
  * nearest neighbor's value for feature, n_i
  */
-
+/*
 object NN {
 	inFile = "data/output.csv"
 	var country_year = Map[String,Map[String,List[Any]]]()
@@ -44,3 +44,4 @@ object NN {
 
 
 }
+*/

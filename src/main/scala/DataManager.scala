@@ -4,12 +4,13 @@ import com.github.tototoshi.csv._
 
 object DataMerge {
 	var country_year = Map[String,Map[String,List[Any]]]()
-	val inFile = "data/out7.csv"
-	val outFile = "data/out8.csv"
+	val inFile = "data/out8.csv"
+	val outFile = "data/out9.csv"
 	def readCSV(csvFile: String) = {
 		//fixBrokenCountries()
 		loadCSV()
-		fixMinMarriageAge()
+		removeNotEnoughData(2)
+		//fixMinMarriageAge()
 		//csv8()
 		//csv5()
 		//csv3()
@@ -17,6 +18,26 @@ object DataMerge {
 		//csv1()
 		//csv4()
 		output()
+	}
+
+	def removeNotEnoughData(min:Int) {
+		for (x <- country_year) {
+			var country = country_year.getOrElse(x._1,Map[String,List[Any]]())
+			var femaleAge = "x"
+			var maleAge = "x"
+			for (y <- x._2){
+				var count = 0
+				for (i <- 1 to y._2.size-1) {
+					if(y._2(1)!= "x") {
+						count+=1
+					}
+				}
+				if (count < min) {
+					country -= y._1
+				}
+			}
+			country_year += x._1 -> country
+		}
 	}
 
 	def fixMinMarriageAge() {
