@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 import sys,math,operator,time,csv
 from copy import deepcopy
 
