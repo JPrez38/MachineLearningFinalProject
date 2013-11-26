@@ -5,19 +5,28 @@ import scala.math._
 
 object DataMerge {
 	var country_year = Map[String,Map[String,List[Any]]]()
-	val inFile = "data/out13.csv"
-	val outFile = "data/out14.csv"
+	val inFile = "data/out17.csv"
+	val outFile = "data/out18.csv"
 	var listLength = 0
 	var totalChange = 0.0
 	var changeCount = 0
 	val changeAmount = .8434602024019697 //avg change by year under 98%
+	val contraceptiveChangeAmount = 0.6527541387052763
+	val teansMarriedChangeAmount = -0.16619477398381088
 	def readCSV(csvFile: String) = {
 		//fixBrokenCountries()
 		loadCSV()
 		var tmpMap = country_year.getOrElse("Uruguay",Map[String,List[Any]]())
 		var tmp = tmpMap.getOrElse("2005",List[Any]())
 		listLength = tmp.size
-		patchLiteracyRates()
+		//patchLiteracyRates("female")
+		//patchLiteracyRates("male")
+		//patchContreceptiveRate("female")
+		//patchContreceptiveRate("male")
+		//fixWeirdChar()
+		patchTeensMarried("female")
+		patchTeensMarried("male")
+		fullData()
 		//getLiteracyRates()
 		//removeNotEnoughData(2)
 		//fixMinMarriageAge()
@@ -27,80 +36,375 @@ object DataMerge {
 		//getTotalCountries()
 		//csv1()
 		//csv4()
-		//println(totalChange/changeCount)
-		//output()
+		println(totalChange/changeCount)
+		output()
 	}
 
-	def patchLiteracyRates() {
+	def patchTeensMarried(male_female:String) {
+		val threshold = 98.0
+		val yearSpan = 7
+		val maxChange = 2
+		val minThreshold =.01
+		var a = 0
+		if (male_female == "male") {
+			a = 8
+		} else if (male_female == "female") {
+			a = 7
+		} else {
+			return
+		}
 		for (x <- country_year) {
 			var country = country_year.getOrElse(x._1,Map[String,List[Any]]())
-			var femaleLitRates = List[(Int,Double)]()
+			var litRates = List[(Int,Double)]()
 			var maleLitRates = List[(Int,Double)]()
 			for (y <- x._2){
-				if(y._2(3)!= "x") {
-					var lityear = (y._2(0).toString.toInt,y._2(3).toString.toDouble)
-					femaleLitRates = lityear :: femaleLitRates
+				if(y._2(a)!= "x") {
+					var lityear = (y._2(0).toString.toInt,y._2(a).toString.toDouble)
+					litRates = lityear :: litRates
 					//println(lityear)
 				}
-				if(y._2(4)!= "x") {
-					var lityear = (y._2(0).toString.toInt,y._2(4).toString.toDouble)
-					maleLitRates = lityear :: maleLitRates
-				}
 			}
-			femaleLitRates = femaleLitRates.sortBy(_._1)
-			maleLitRates = maleLitRates.sortBy(_._1)
-			if(femaleLitRates.size == 1) {
-				if (femaleLitRates(0)._2 > 98.0) {
-					var constantlit = femaleLitRates(0)._2
+			litRates = litRates.sortBy(_._1)
+			if(litRates.size == 1) {
+				if (litRates(0)._2 > threshold) {
+					var constantlit = litRates(0)._2
 					//println(x._1 + "," + j._1 + "," + j._2)
 					for (y <- x._2){
-						if (y._2(3) == "x") {
+						if (y._2(a) == "x") {
 							var lityear = (y._2(0).toString.toInt,constantlit)
-							femaleLitRates = lityear :: femaleLitRates
+							litRates = lityear :: litRates
 						}
 					}
 				} else {
-					var constantlit = femaleLitRates(0)._2
-					val startYear = femaleLitRates(0)._1
+					var constantlit = litRates(0)._2
+					val startYear = litRates(0)._1
+					for (r <- startYear-yearSpan to startYear+yearSpan) {
+						
+						val deltaYear = r - startYear
+						if (deltaYear != 0) {
+							var change = deltaYear * teansMarriedChangeAmount
+							var lityear = (r,constantlit + change)
+							litRates = lityear :: litRates
+						}
+					}
+					//println(x._1 + "," + j._1 + "," + j._2)
+				}
+			} else if (litRates.size > 1) {
+				val change= litRates(litRates.size-1)._2-litRates(0)._2
+				val span = litRates(litRates.size-1)._1-litRates(0)._1
+				var avgChange = change/span
+		
+				//println(avgChange)
+				if (litRates(litRates.size-1)._2 < threshold) {
+					totalChange += avgChange
+					changeCount+= 1
+				} 
+				var newlitRates = litRates
+				for (k <- 1 to litRates.size-1) {
+					val change = litRates(k)._2 - litRates(k-1)._2
+					val changeYear = litRates(k)._1 - litRates(k-1)._1
+					val delta = change/changeYear
+					for( g <- litRates(k-1)._1+1 to litRates(k)._1-1) {
+						val deltaYear = g - litRates(k-1)._1
+						var change = deltaYear * delta
+						var lityear = (g,litRates(k-1)._2 + change)
+						newlitRates = lityear :: newlitRates
+					}
+				} 
+				litRates = newlitRates
+				litRates = litRates.sortBy(_._1)
+				val beg = litRates(0)._1
+				val end = litRates(litRates.size-1)._1
+				val begVal = litRates(0)._2
+				val endVal = litRates(litRates.size-1)._2
+				for (e <- beg-yearSpan to beg-1) {
+					val deltaYear = e - beg
+					var change = deltaYear * avgChange
+					var newVal = begVal + change
+					if (newVal > 99) {
+						newVal = 99
+					}
+					if (avgChange > maxChange) {
+						avgChange = maxChange-.01
+					}
+					if (newVal < minThreshold) {
+						//newVal = minThreshold +.01
+					}
+					if (newVal > minThreshold && avgChange < maxChange) {
+						var lityear = (e,newVal)
+						litRates = lityear :: litRates
+					}
+				}
+				if (x._1 == "Cameroon") {
+					//println(avgChange)
+				}
+				if (avgChange > maxChange) {
+					println(avgChange + "," + x._1)
+				}
+					
+				for (e <- end+1 to end +yearSpan) {
+					val deltaYear = e - end
+					var change = deltaYear * avgChange
+					var newVal = endVal + change
+					if (newVal >= 100.0) {
+						newVal = 100.0
+					}
+					if (newVal < minThreshold) {
+						newVal = minThreshold +.01
+					}
+					if (newVal > minThreshold && avgChange < maxChange) {
+						var lityear = (e,newVal)
+						litRates = lityear :: litRates
+					}
+				}
+			}
+			litRates = litRates.sortBy(_._1)
+			if (x._1 == "Nepal") {
+				//litRates.foreach(x => println(x))
+			}
+			for( y <- litRates) {
+				var lit_year = country.getOrElse(y._1.toString,List[Any]())
+				if (lit_year.size != 0 && lit_year(a) == "x") {
+					if (x._1 == "Nepal") {
+						//println(y._1.toString)
+					}
+					lit_year = lit_year.updated(a,y._2)
+					country += y._1.toString -> lit_year
+				}
+			}
+			country_year += x._1 -> country
+
+			/*
+			for (y <- x._2) {
+				var tmpMap = country.getOrElse(y._1,List[Any]())
+				if (tmpMap(1) == "x") {
+					tmpMap = tmpMap.updated(1,femaleAge)
+				}
+				if (tmpMap(2) == "x") {
+					tmpMap = tmpMap.updated(2,maleAge)
+				}
+				country += y._1 -> tmpMap	
+			}
+			country_year += x._1 -> country*/
+		}
+	}
+
+	def patchContreceptiveRate(male_female:String) {
+		val threshold = 98.0
+		val yearSpan = 7
+		val maxChange = 2
+		val minThreshold =1.0
+		var a = 0
+		if (male_female == "male") {
+			a = 6
+		} else if (male_female == "female") {
+			a = 5
+		} else {
+			return
+		}
+		for (x <- country_year) {
+			var country = country_year.getOrElse(x._1,Map[String,List[Any]]())
+			var litRates = List[(Int,Double)]()
+			var maleLitRates = List[(Int,Double)]()
+			for (y <- x._2){
+				if(y._2(a)!= "x") {
+					var lityear = (y._2(0).toString.toInt,y._2(a).toString.toDouble)
+					litRates = lityear :: litRates
+					//println(lityear)
+				}
+			}
+			litRates = litRates.sortBy(_._1)
+			if(litRates.size == 1) {
+				if (litRates(0)._2 > threshold) {
+					var constantlit = litRates(0)._2
+					//println(x._1 + "," + j._1 + "," + j._2)
+					for (y <- x._2){
+						if (y._2(a) == "x") {
+							var lityear = (y._2(0).toString.toInt,constantlit)
+							litRates = lityear :: litRates
+						}
+					}
+				} else {
+					var constantlit = litRates(0)._2
+					val startYear = litRates(0)._1
+					for (r <- startYear-yearSpan to startYear+yearSpan) {
+						
+						val deltaYear = r - startYear
+						if (deltaYear != 0) {
+							var change = deltaYear * contraceptiveChangeAmount
+							var lityear = (r,constantlit + change)
+							litRates = lityear :: litRates
+						}
+					}
+					//println(x._1 + "," + j._1 + "," + j._2)
+				}
+			} else if (litRates.size > 1) {
+				val change= litRates(litRates.size-1)._2-litRates(0)._2
+				val span = litRates(litRates.size-1)._1-litRates(0)._1
+				var avgChange = change/span
+		
+				//println(avgChange)
+				if (litRates(litRates.size-1)._2 < threshold) {
+					totalChange += avgChange
+					changeCount+= 1
+				} 
+				var newlitRates = litRates
+				for (k <- 1 to litRates.size-1) {
+					val change = litRates(k)._2 - litRates(k-1)._2
+					val changeYear = litRates(k)._1 - litRates(k-1)._1
+					val delta = change/changeYear
+					for( g <- litRates(k-1)._1+1 to litRates(k)._1-1) {
+						val deltaYear = g - litRates(k-1)._1
+						var change = deltaYear * delta
+						var lityear = (g,litRates(k-1)._2 + change)
+						newlitRates = lityear :: newlitRates
+					}
+				} 
+				litRates = newlitRates
+				litRates = litRates.sortBy(_._1)
+				val beg = litRates(0)._1
+				val end = litRates(litRates.size-1)._1
+				val begVal = litRates(0)._2
+				val endVal = litRates(litRates.size-1)._2
+				for (e <- beg-yearSpan to beg-1) {
+					val deltaYear = e - beg
+					var change = deltaYear * avgChange
+					var newVal = begVal + change
+					if (newVal > 99) {
+						newVal = 99
+					}
+					if (avgChange > maxChange) {
+						avgChange = maxChange-.01
+					}
+					if (newVal > minThreshold && avgChange < maxChange) {
+						var lityear = (e,newVal)
+						litRates = lityear :: litRates
+					}
+				}
+				if (x._1 == "Cameroon") {
+					//println(avgChange)
+				}
+				if (avgChange > maxChange) {
+					println(avgChange + "," + x._1)
+				}
+					
+				for (e <- end+1 to end +yearSpan) {
+					val deltaYear = e - end
+					var change = deltaYear * avgChange
+					var newVal = endVal + change
+					if (newVal >= 100.0) {
+						newVal = 100.0
+					}
+					if (newVal > minThreshold && avgChange < maxChange) {
+						var lityear = (e,newVal)
+						litRates = lityear :: litRates
+					}
+				}
+			}
+			litRates = litRates.sortBy(_._1)
+			if (x._1 == "Nepal") {
+				//litRates.foreach(x => println(x))
+			}
+			for( y <- litRates) {
+				var lit_year = country.getOrElse(y._1.toString,List[Any]())
+				if (lit_year.size != 0 && lit_year(a) == "x") {
+					if (x._1 == "Nepal") {
+						//println(y._1.toString)
+					}
+					lit_year = lit_year.updated(a,y._2)
+					country += y._1.toString -> lit_year
+				}
+			}
+			country_year += x._1 -> country
+
+			/*
+			for (y <- x._2) {
+				var tmpMap = country.getOrElse(y._1,List[Any]())
+				if (tmpMap(1) == "x") {
+					tmpMap = tmpMap.updated(1,femaleAge)
+				}
+				if (tmpMap(2) == "x") {
+					tmpMap = tmpMap.updated(2,maleAge)
+				}
+				country += y._1 -> tmpMap	
+			}
+			country_year += x._1 -> country*/
+		}
+	}
+
+	def patchLiteracyRates(male_female:String) {
+		var a = 0
+		if (male_female == "male") {
+			a = 4
+		} else if (male_female == "female") {
+			a = 3
+		} else {
+			return
+		}
+		for (x <- country_year) {
+			var country = country_year.getOrElse(x._1,Map[String,List[Any]]())
+			var litRates = List[(Int,Double)]()
+			var maleLitRates = List[(Int,Double)]()
+			for (y <- x._2){
+				if(y._2(a)!= "x") {
+					var lityear = (y._2(0).toString.toInt,y._2(a).toString.toDouble)
+					litRates = lityear :: litRates
+					//println(lityear)
+				}
+			}
+			litRates = litRates.sortBy(_._1)
+			if(litRates.size == 1) {
+				if (litRates(0)._2 > 98.0) {
+					var constantlit = litRates(0)._2
+					//println(x._1 + "," + j._1 + "," + j._2)
+					for (y <- x._2){
+						if (y._2(a) == "x") {
+							var lityear = (y._2(0).toString.toInt,constantlit)
+							litRates = lityear :: litRates
+						}
+					}
+				} else {
+					var constantlit = litRates(0)._2
+					val startYear = litRates(0)._1
 					for (r <- startYear-3 to startYear+3) {
 						
 						val deltaYear = r - startYear
 						if (deltaYear != 0) {
 							var change = deltaYear * changeAmount
 							var lityear = (r,constantlit + change)
-							femaleLitRates = lityear :: femaleLitRates
+							litRates = lityear :: litRates
 						}
 					}
 					//println(x._1 + "," + j._1 + "," + j._2)
 				}
-			} else if (femaleLitRates.size > 1) {
-				val change= femaleLitRates(femaleLitRates.size-1)._2-femaleLitRates(0)._2
-				val span = femaleLitRates(femaleLitRates.size-1)._1-femaleLitRates(0)._1
+			} else if (litRates.size > 1) {
+				val change= litRates(litRates.size-1)._2-litRates(0)._2
+				val span = litRates(litRates.size-1)._1-litRates(0)._1
 				val avgChange = change/span
 		
 				//println(avgChange)
-				if (femaleLitRates(femaleLitRates.size-1)._2 < 98) {
+				if (litRates(litRates.size-1)._2 < 98) {
 					totalChange += avgChange
 					changeCount+= 1
 				} 
-				var newFemaleLitRates = femaleLitRates
-				for (k <- 1 to femaleLitRates.size-1) {
-					val change = femaleLitRates(k)._2 - femaleLitRates(k-1)._2
-					val changeYear = femaleLitRates(k)._1 - femaleLitRates(k-1)._1
+				var newlitRates = litRates
+				for (k <- 1 to litRates.size-1) {
+					val change = litRates(k)._2 - litRates(k-1)._2
+					val changeYear = litRates(k)._1 - litRates(k-1)._1
 					val delta = change/changeYear
-					for( g <- femaleLitRates(k-1)._1+1 to femaleLitRates(k)._1-1) {
-						val deltaYear = g - femaleLitRates(k-1)._1
+					for( g <- litRates(k-1)._1+1 to litRates(k)._1-1) {
+						val deltaYear = g - litRates(k-1)._1
 						var change = deltaYear * delta
-						var lityear = (g,femaleLitRates(k-1)._2 + change)
-						newFemaleLitRates = lityear :: newFemaleLitRates
+						var lityear = (g,litRates(k-1)._2 + change)
+						newlitRates = lityear :: newlitRates
 					}
 				} 
-				femaleLitRates = newFemaleLitRates
-				femaleLitRates = femaleLitRates.sortBy(_._1)
-				val beg = femaleLitRates(0)._1
-				val end = femaleLitRates(femaleLitRates.size-1)._1
-				val begVal = femaleLitRates(0)._2
-				val endVal = femaleLitRates(femaleLitRates.size-1)._2
+				litRates = newlitRates
+				litRates = litRates.sortBy(_._1)
+				val beg = litRates(0)._1
+				val end = litRates(litRates.size-1)._1
+				val begVal = litRates(0)._2
+				val endVal = litRates(litRates.size-1)._2
 				for (e <- beg-3 to beg-1) {
 					val deltaYear = e - beg
 					var change = deltaYear * avgChange
@@ -110,7 +414,7 @@ object DataMerge {
 					}
 					if (newVal > 10 && avgChange < 2) {
 						var lityear = (e,newVal)
-						femaleLitRates = lityear :: femaleLitRates
+						litRates = lityear :: litRates
 					}
 				}
 				if (x._1 == "Cameroon") {
@@ -124,19 +428,30 @@ object DataMerge {
 					val deltaYear = e - end
 					var change = deltaYear * avgChange
 					var newVal = endVal + change
-					if (newVal > 99) {
-						newVal = 99
+					if (newVal >= 100.0) {
+						newVal = 100.0
 					}
 					if (newVal > 10 && avgChange < 2) {
 						var lityear = (e,newVal)
-						femaleLitRates = lityear :: femaleLitRates
+						litRates = lityear :: litRates
 					}
 				}
 			}
-			femaleLitRates = femaleLitRates.sortBy(_._1)
+			litRates = litRates.sortBy(_._1)
 			if (x._1 == "Nepal") {
-				femaleLitRates.foreach(x => println(x))
+				//litRates.foreach(x => println(x))
 			}
+			for( y <- litRates) {
+				var lit_year = country.getOrElse(y._1.toString,List[Any]())
+				if (lit_year.size != 0 && lit_year(a) == "x") {
+					if (x._1 == "Nepal") {
+						//println(y._1.toString)
+					}
+					lit_year = lit_year.updated(a,y._2)
+					country += y._1.toString -> lit_year
+				}
+			}
+			country_year += x._1 -> country
 
 			/*
 			for (y <- x._2) {
@@ -166,13 +481,68 @@ object DataMerge {
 					}
 				}
 				if (count < min) {
-					println(x._1 + " " + y._1)
+					//println(x._1 + " " + y._1)
 					country -= y._1
 				}
 			}
 			country_year += x._1 -> country
 		}
 	}
+
+		def fixWeirdChar() {
+		var total = 0
+		for (x <- country_year) {
+			var country = country_year.getOrElse(x._1,Map[String,List[Any]]())
+			for (y <- country) {
+				var add = true
+				var newList = y._2
+				var index = 0
+				for (j <- y._2) {
+					try {
+						j.toString.toDouble
+					} catch {
+						case e : Throwable => if (j != "x") {
+							newList = newList.updated(index,"x")
+							println(j)
+						}
+					}
+					if (j == "x") {
+						add = false
+					}
+					index+=1
+					country += y._1.toString -> newList
+				}
+				if (add == true) {
+					total += 1
+					//println(x._1 +  "," + y)
+				}
+				country_year += x._1 -> country
+			}
+		}	
+		//println(total)
+	}
+
+	def fullData() {
+		var total = 0
+		for (x <- country_year) {
+			var country = country_year.getOrElse(x._1,Map[String,List[Any]]())
+			for (y <- country) {
+				var add = true
+				for (j <- y._2) {
+					if (j == "x") {
+						add = false
+					}
+				}
+				if (add == true) {
+					total += 1
+					//println(x._1 +  "," + y)
+				}
+
+			}
+		}
+		println(total)
+	}
+
 
 	def fixMinMarriageAge() {
 		for (x <- country_year) {
@@ -502,6 +872,7 @@ object DataMerge {
 		writer.writeAll(outList)
 		writer.close()
 	}
+
 
 	def getTotalCountries() = {
 		import java.io._
