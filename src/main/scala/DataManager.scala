@@ -5,8 +5,8 @@ import scala.math._
 
 object DataMerge {
 	var country_year = Map[String,Map[String,List[Any]]]()
-	val inFile = "data/out20.csv"
-	val outFile = "data/out21.csv"
+	val inFile = "data/out24.csv"
+	val outFile = "data/out25.csv"
 	var listLength = 0
 	var totalChange = 0.0
 	var changeCount = 0
@@ -30,8 +30,12 @@ object DataMerge {
 		//patchTeensMarried("female")
 		//patchTeensMarried("male")
 		//patchWomensShareOfLaborForce()
-		patchfemaleMaleRatio()
+		//patchfemaleMaleRatio()
+		//addFemalePop()
+		//normalizeOutput()
 		fullData()
+		//outputs()
+		//possibles()
 		//getLiteracyRates()
 		//removeNotEnoughData(2)
 		//fixMinMarriageAge()
@@ -41,8 +45,67 @@ object DataMerge {
 		//getTotalCountries()
 		//csv1()
 		//csv4()
-		println(totalChange/changeCount)
-		output()
+		//println(totalChange/changeCount)
+		//output()
+	}
+
+	def normalizeOutput() {
+		for (x <- country_year) {
+			var country = country_year.getOrElse(x._1,Map[String,List[Any]]())
+			for (y <- country) {
+				//println(y)
+				if (y._2(y._2.size-1) != "x" && y._2(y._2.size-2) != "x") {
+					val normal = y._2(y._2.size-2).toString.toDouble/y._2(y._2.size-1).toString.toDouble
+					val newList = y._2 ::: List(normal)
+					country += y._1 -> newList
+				} else {
+					val newList = y._2 ::: List("x")
+					country += y._1 -> newList
+				}
+
+			}
+			country_year += x._1 -> country
+		}
+	}
+
+	def addFemalePop() = {
+		import java.io._
+		val reader = CSVReader.open(new File("data/femalepop.csv"))
+		val startYear = 1950
+
+		var set = Set[String]()
+		for (x <- reader) {
+			var country = country_year.getOrElse(x(0),Map[String,List[Any]]())
+			if (country.size != 0) {
+				for (y <- 1 to x.length-1) {
+					val year = startYear + y - 1
+					var j = country.getOrElse(year.toString,List[Any]())
+					//var newList = List(x(y).replaceAll(" ",""))
+					if (j.size != 0) {
+						val num = ((x(y).replaceAll(" ","").toInt)*1000).toString
+						j = j ::: List(num)
+						country += year.toString -> j
+					}
+				}
+				country_year += x(0) -> country
+			}
+
+		}
+		//set.foreach(i => println(i))
+		//println(set.size)
+		//println(country_year.size)
+		var sum = 0
+		for (x <- set) {
+			if (country_year.getOrElse(x,None) != None) {
+				sum += 1
+			}
+		}
+		for (x <- country_year) {
+			if (!set.contains(x._1)) {
+				//println(x._1)
+			}
+		}
+		//println(sum)
 	}
 
 	def patchfemaleMaleRatio() {
@@ -982,6 +1045,64 @@ object DataMerge {
 		println(total)
 	}
 
+	def outputs() {
+		var total = 0
+		for (x <- country_year) {
+			var country = country_year.getOrElse(x._1,Map[String,List[Any]]())
+			for (y <- country) {
+				var add = true
+				if(y._2(y._2.size-1) == "x") {
+					add = false
+				}
+				if (add == true) {
+					total += 1
+					//println(x._1 +  "," + y)
+				}
+
+			}
+		}
+		println(total)
+	}
+
+	def possibles() {
+		var total = 0
+		for (x <- country_year) {
+			var country = country_year.getOrElse(x._1,Map[String,List[Any]]())
+			for (y <- country) {
+				var add = true
+				var gg = 0
+				val year = y._1.toString.toInt
+				
+				if (year < 1980 || year > 2005) {
+					add = false
+					//println(year)
+				}
+				if(y._2(y._2.size-1) == "x") {
+					add = false
+				}
+				for (j <- y._2) {
+					if (j == "x") {
+						gg+=1
+						if (gg == 3) {
+							add = false
+						}
+					}
+				}
+				if (gg <= 3 && gg != 0 && y._2(y._2.size-1) != "x" && (year >= 1980 && year <= 2005)) {
+					println(x._1 + ":" + y._2)
+				}
+				if (add == true) {
+					total += 1
+					//println(x._1 +  "," + y)
+				}
+
+			}
+		}
+		println(total)
+	}
+
+
+
 
 	def fixMinMarriageAge() {
 		for (x <- country_year) {
@@ -1323,6 +1444,8 @@ object DataMerge {
 		set.foreach(i => println(i))
 		println(set.size)
 	}
+
+	
 
 	def csv1() = {
 		import java.io._
