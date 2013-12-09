@@ -5,8 +5,8 @@ import scala.math._
 
 object DataMerge {
 	var country_year = Map[String,Map[String,List[Any]]]()
-	val inFile = "data/out24.csv"
-	val outFile = "data/normaldata.csv"
+	val inFile = "data/out31.csv"
+	val outFile = "data/nearestneighbordata.csv"
 	var listLength = 0
 	var totalChange = 0.0
 	var changeCount = 0
@@ -17,12 +17,21 @@ object DataMerge {
 	val womensShareChangeAmount = 0.13282134532134532
 	val maleFemaleChangeAmount = 0.006712239642299642
 	def readCSV(csvFile: String) = {
+		//addmorebirths()
 		//fixBrokenCountries()
 		loadCSV()
 		var tmpMap = country_year.getOrElse("Uruguay",Map[String,List[Any]]())
 		var tmp = tmpMap.getOrElse("2005",List[Any]())
 		listLength = tmp.size
-		elim()
+		//normalizeOutput()
+		//fullData()
+		//patchBirths()
+		fixGaps(5)
+		//removetolittle()
+		//roundBirths()
+		//elim()
+
+		//removeNonOutputs()
 		//patchLiteracyRates("female")
 		//patchLiteracyRates("male")
 		//patchContreceptiveRate("female")
@@ -32,13 +41,13 @@ object DataMerge {
 		//patchTeensMarried("male")
 		//patchWomensShareOfLaborForce()
 		//patchfemaleMaleRatio()
-		//addFemalePop()
-		//normalizeOutput()
+		//addmoreFemalePop()
+		//normalizeOutputAgain()
 		//fullData()
 		//outputs()
 		//possibles()
 		//getLiteracyRates()
-		//removeNotEnoughData(2)
+		//removeNotEnoughData(listLength-3)
 		//fixMinMarriageAge()
 		//csv8()
 		//csv5()
@@ -49,6 +58,212 @@ object DataMerge {
 		//println(totalChange/changeCount)
 		output()
 	}
+
+	def fixGaps(k:Int) {
+		for (x <- country_year) {
+			var country = country_year.getOrElse(x._1,Map[String,List[Any]]())
+			for (y <- country) {
+				var newList = y._2
+				for (j <- 0 to y._2.size-1) {
+					if (y._2(j) == "x") {
+						newList = newList.updated(j,fillNearestNeighbor(j,y._2,x._1,true,k))
+					}
+				}
+				country += y._1 -> newList
+
+			}
+			country_year += x._1 -> country
+		}
+	}
+
+	def fillNearestNeighbor(position: Int,theList:List[Any],country:String,useCountry:Boolean,k:Int) : Double = {
+		var nearestNeighbors = new Array[(Double,Double)](k)
+		for (i <- 0 to k-1) {
+			nearestNeighbors(i) = (10000000000000000000000000.0,0.0)
+		}
+		for (x <- country_year) {
+			var country = country_year.getOrElse(x._1,Map[String,List[Any]]())
+			for (y <- country) {
+				var sumEuclideanDistance = 0.0
+				if (y._2(position) != "x" && (x._1 != country || useCountry)) {
+					for(j <- 1 to y._2.size-1){
+						if (y._2(j) != "x" && theList(j) != "x") {
+							sumEuclideanDistance += math.pow(y._2(j).toString.toDouble-theList(j).toString.toDouble,2)
+						}
+					}
+					if (sumEuclideanDistance < nearestNeighbors(k-1)._1) {
+						nearestNeighbors(k-1) = (sumEuclideanDistance,y._2(position).toString.toDouble)
+						nearestNeighbors = nearestNeighbors.sortBy(_._1)
+						//if (x._1 == "Argentina") {
+						//	nearestNeighbors.foreach(x => println(position + ":" + x ))
+						//}
+					}
+				}
+
+			}
+		}
+
+		var sum = 0.0
+		nearestNeighbors.foreach(x => sum+= x._2)
+
+		return (sum/k)
+	}
+
+	def roundBirths(){
+		for (x <- country_year) {
+			var country = country_year.getOrElse(x._1,Map[String,List[Any]]())
+			for (y <- country) {
+				//println(y)
+				if (y._2(y._2.size-3) != "x") {
+					val normal = math.round(y._2(y._2.size-3).toString.toDouble)
+					//println(normal)
+					val newList = y._2.updated(y._2.size-3,normal)
+					country += y._1 -> newList
+				}
+			}
+			country_year += x._1 -> country
+		}
+	}
+
+	def normalizeOutputAgain() {
+		for (x <- country_year) {
+			var country = country_year.getOrElse(x._1,Map[String,List[Any]]())
+			for (y <- country) {
+				//println(y)
+				if (y._2(y._2.size-2) != "x" && y._2(y._2.size-3) != "x") {
+					val normal = y._2(y._2.size-3).toString.toDouble/y._2(y._2.size-2).toString.toDouble
+					if (y._2(y._2.size-1) == "x"){
+						val newList = y._2.updated(y._2.size-1,normal)
+						country += y._1 -> newList
+						println(x._1 + ":" + y._1)
+					}
+				}
+			}
+			country_year += x._1 -> country
+		}
+	}
+
+
+	def patchBirths() = {
+		import java.io._
+		val reader = CSVReader.open(new File("data/out27.csv"))
+		for (x <- reader) {
+			var country = country_year.getOrElse(x(0),Map[String,List[Any]]())
+			var year = country.getOrElse(x(1),List[Any]())
+			if (year.size > 0) {
+				if (year(year.size-3) == "x") {
+					year = year.updated(year.size-3,x(x.size-1))
+					country += x(1) -> year
+					country_year += x(0) -> country
+				}
+			} 
+			if (country.size < 1) {
+				println(x(0))
+			}
+		}
+	}
+
+	
+	def addmorebirths() = {
+		import java.io._
+		var country_year = Map[(String,Int),Double]()
+		val reader = CSVReader.open(new File("data/birthoutputs.csv"))
+		for (x <- reader) {
+			val str = x(2).replaceAll("\\D+",",")
+			val y = str.split(",")
+			if (y.length > 1 && y(1) != " " && y(1).toInt < 20){
+			//if (y(1).toInt < 20) {
+				var tmp = (x(0),x(1).toInt)
+				var count = country_year.getOrElse(tmp,0.0)
+				count += x(3).toDouble
+				country_year += tmp -> count
+				//println(x(0) + "," + x(1) + "," + x(4) + "," + x(8))
+			}
+			//}
+		}
+		
+		//country_year.foreach(x => println(x))
+		val x = country_year.toList.sortBy(_._1)
+		var outList = List[List[Any]]()
+		for (y <- x) {
+			var tmp = List[Any]()
+			tmp = y._1._1 :: tmp
+			tmp = y._1._2 :: tmp
+			for (i <- 1 to 11) {
+				tmp = 'x' :: tmp
+			}
+			tmp = y._2 :: tmp
+			tmp = tmp.reverse
+			
+			//tmp.foreach(i => println(i))
+			outList = tmp :: outList
+		}
+		//outList.foreach(u => println(u))
+		outList = outList.reverse
+		reader.close()
+
+		val f = new File("data/out27.csv")
+		val writer = CSVWriter.open(f)
+		writer.writeAll(outList)
+		writer.close()
+	}
+
+	
+
+	def removetolittle() {
+		var total = 0
+		for (x <- country_year) {
+			var country = country_year.getOrElse(x._1,Map[String,List[Any]]())
+			for (y <- country) {
+				var add = true
+				var gg = 0
+				val year = y._1.toString.toInt
+				
+				if (year < 1980 || year > 2005) {
+					add = false
+					//println(year)
+				}
+				if(y._2(y._2.size-1) == "x") {
+					add = false
+				}
+				for (j <- y._2) {
+					if (j == "x") {
+						gg+=1
+						if (gg == 3) {
+							add = false
+							country -= y._1
+						}
+					}
+				}
+			}
+			country_year += x._1 -> country
+		}
+	}
+
+	def removeNonOutputs() {
+		var total = 0
+		for (x <- country_year) {
+			var country = country_year.getOrElse(x._1,Map[String,List[Any]]())
+			for (y <- country) {
+				var add = true
+				for (j <- y._2) {
+					if(y._2(y._2.size-1) == "x") {
+						country -= y._1
+					}
+				}
+
+				if (add == true) {
+					total += 1
+					//println(x._1 +  "," + y)
+				}
+
+			}
+			country_year += x._1 -> country
+		}
+		//println(total)
+	}	
+
+
 
 	def elim() {
 		var total = 0
@@ -1112,7 +1327,7 @@ object DataMerge {
 						}
 					}
 				}
-				if (gg <= 3 && gg != 0 && y._2(y._2.size-1) != "x" && (year >= 1980 && year <= 2005)) {
+				if (gg <= 3 && gg != 0 && y._2(y._2.size-1) != "x") {
 					println(x._1 + ":" + y._2)
 				}
 				if (add == true) {
@@ -1264,9 +1479,9 @@ object DataMerge {
 			country_year += x(0) -> tmpMap
 		}
 		//val reader2 = CSVReader.open(new File("data/"))
-		val tmp = country_year.getOrElse("Andorra",null)
+		//val tmp = country_year.getOrElse("Andorra",null)
 		//println(tmp)
-		val tmpyear = tmp.getOrElse("2003",List[Any]())
+		//val tmpyear = tmp.getOrElse("2003",List[Any]())
 		//tmpyear.foreach(x => println(x))
 	
 	}
