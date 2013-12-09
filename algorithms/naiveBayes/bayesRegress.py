@@ -65,26 +65,40 @@ def constructData(reader):
 	keys = []
 	data = []
 	outs = []
+	pops = []
 
 	for index,vec in enumerate(reader):
 		if 'x' not in vec:
 			keys.append((vec[0],vec[1]))
 			data.append([int(vec[2]),int(vec[3]),float(vec[4]),float(vec[5]),float(vec[6]),float(vec[7]),float(vec[8]),float(vec[9]),float(vec[10]),float(vec[11]),float(vec[12]),float(vec[13])])
-			outs.append(float(vec[14]))
+			outs.append(float(vec[16]))
+			pops.append(int(vec[15]))
 
-	return deepcopy(keys),deepcopy(data),deepcopy(outs)
+	return deepcopy(keys),deepcopy(data),deepcopy(outs),deepcopy(pops)
 #----------------------------------------------------------------------------------------------------
 
 #----------------------------------------------------------------------------------------------------
 def crunchTestResults(predictions,actuals):
 	misses = 0
+	totalError = 0
 
 	for prediction,actual in zip(predictions,actuals):
 		margin = math.fabs(actual-prediction)
 		if margin > errorMargin:
 			misses += 1
+		totalError += margin
 
-	return misses,float(float(misses)/float(len(actuals)))
+	return misses,float(float(misses)/float(len(actuals))),totalError
+#----------------------------------------------------------------------------------------------------
+
+#----------------------------------------------------------------------------------------------------
+def convertPopVals(decimals, population):
+	converts = []
+
+	for decimal,pop in zip(decimals,population):
+		converts.append(float(decimal * pop))
+
+	return deepcopy(converts)
 #----------------------------------------------------------------------------------------------------
 
 
@@ -92,7 +106,7 @@ print "-" * 32
 
 print "TRAINING FILE: " + str(sys.argv[1])
 print "Constructing data lists..."
-keys,data,outs = constructData(dataReader)
+keys,data,outs,pops = constructData(dataReader)
 t2 = time.time()
 print " -> Construction COMPLETE. " + str(t2-startTime) + " seconds."
 print "      Number of complete vectors generated from data: " + str(len(data))
@@ -101,7 +115,7 @@ print "-" * 32
 
 print "TEST FILE: " + str(sys.argv[2])
 print "Constructing test lists..."
-testKeys,testData,testOuts = constructData(testReader)
+testKeys,testData,testOuts,testPops = constructData(testReader)
 t3 = time.time()
 print " -> Construction COMPLETE. " + str(t3-t2) + " seconds."
 print "      Number of complete vectors generated from data: " + str(len(testData))
@@ -134,24 +148,39 @@ predictions = deepcopy(model.predict(testData))
 t5 = time.time()
 print " -> Testing COMPLETE. " + str(t5-t4) + " seconds."
 
+#convert outputs
+trainOutsPop = convertPopVals(outs,pops)
+predictPop = convertPopVals(predictions,testPops)
+testOutPop = convertPopVals(testOuts,testPops)
+
+
 print "\nCrunchifying tasty test data stats for review... Yum"
-misses,error = crunchTestResults(predictions,testOuts)
+misses,error,totalError = crunchTestResults(predictPop,testOutPop)
 t6 = time.time()
 print " -> Crunching COMPLETE. " + str(t6-t5) + " seconds."
 
 print "-" * 32
 
-print "BAYESIAN REGRESSION BREAKDOWN"
-print "  Training vectors: " + str(len(data)) + " from file: " + str(sys.argv[1])
-print "  Testing vectors: " + str(len(testData)) + " from file: " + str(sys.argv[2])
-print "  Prediction misses: " + str(misses) + " vectors out of total " + str(len(testData))
-print "  Prediction accuracy: " + str(1 - error)
+print "ALGORITHM SUMMARY"
+print "  Training Vectors:      " + str(len(data)) + " from file: " + str(sys.argv[1])
+print "  Testing Vectors:       " + str(len(testData)) + " from file: " + str(sys.argv[2])
+print "  Accuracy Summary:      " 
+print "      -------------------------------------------------------"
+print "      | " + str(len(testData) - misses) + " correct"
+print "      | " + str(misses) + " incorrect"
+print "      | " + str(len(testData)) + " total"
+print "      | Prediction Accuracy:   " + str(1 - error)
+print "      | Prediction Inaccuracy: " + str(error)
+#print "      | Total Error:           " + str(totalError)
+print "      | Average Error:         " + str(float(totalError) / float(len(testData)))
+print "      -------------------------------------------------------"
+print "  Total Time:            " + str(time.time() - startTime) + " seconds"
 
 if breakdown:
 	print "-" * 32
 	print "EXPLICIT TEST VECTOR BREAKDOWN"
 	i=0
-	for prediction,actual in zip(predictions,testOuts):
+	for prediction,actual in zip(predictPop,testOutPop):
 		key = (testKeys[i][0],testKeys[i][1])
 		print str(key) + "; Prediction: " + str(prediction) + "; Actual: " + str(actual)
 		i += 1
