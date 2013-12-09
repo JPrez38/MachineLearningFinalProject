@@ -52,8 +52,8 @@ else: #args correct
 
 	for index,line in enumerate(reader):
 		key = (line[0],line[1])
-		val = (line[2],line[3],line[4],line[5])
-		data.append([line[2],line[3],line[4],line[5]])
+		val = ([line[2],line[3],line[4],line[5],line[6],line[7],line[8],line[9],line[10],line[11],line[12],line[13]])
+		data.append([line[2],line[3],line[4],line[5],line[6],line[7],line[8],line[9],line[10],line[11],line[12],line[13]])
 	
 
 
@@ -68,8 +68,8 @@ else: #args correct
 			for ai,a in enumerate(l):
 				if a == 'x':
 					l[ai] = transData[i][ai-2]
-			dataDict[(l[0],l[1])] = [float(l[2]),float(l[3]),float(l[4]),float(l[5])]
-			print str(l[0]) + "," + str(l[1]) + "," + str(l[2]) + "," + str(l[3]) + "," + str(l[4]) + "," + str(l[5])
+			dataDict[(l[0],l[1])] = [float(l[2]),float(l[3]),float(l[4]),float(l[5]),float(l[6]),float(l[7]),float(l[8]),float(l[9]),float(l[10]),float(l[11]),float(l[12]),float(l[l3])]
+			print str(l[0]) + "," + str(l[1]) + "," + str(l[2]) + "," + str(l[3]) + "," + str(l[4]) + "," + str(l[5]) + "," + str(l[6]) + "," + str(l[7]) + "," + str(l[8]) + "," + str(l[9]) + "," + str(l[10]) + "," + str(l[11]) + "," + str(l[12]) + "," + str(l[13])
 		
 	elif sys.argv[1] == "NN":
 		data = tran(data, -1)
@@ -81,8 +81,8 @@ else: #args correct
 			for ai,a in enumerate(l):
 				if a == 'x':
 					l[ai] = data[neighbors[i]][ai-2]
-			dataDict[(l[0],l[1])] = [float(l[2]),float(l[3]),float(l[4]),float(l[5])]
-			print str(l[0]) + "," + str(l[1]) + "," + str(l[2]) + "," + str(l[3]) + "," + str(l[4]) + "," + str(l[5])
+			dataDict[(l[0],l[1])] = [float(l[2]),float(l[3]),float(l[4]),float(l[5]),float(l[6]),float(l[7]),float(l[8]),float(l[9]),float(l[10]),float(l[11]),float(l[12]),float(l[l3])]
+			print str(l[0]) + "," + str(l[1]) + "," + str(l[2]) + "," + str(l[3]) + "," + str(l[4]) + "," + str(l[5]) + "," + str(l[6]) + "," + str(l[7]) + "," + str(l[8]) + "," + str(l[9]) + "," + str(l[10]) + "," + str(l[11]) + "," + str(l[12]) + "," + str(l[13])
 
 	else: #BOTH MOODYFLACKA!
 		holdData = deepcopy(tran(data, np.nan))
