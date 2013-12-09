@@ -17,6 +17,7 @@ def printUsageAndExit():
 	print "Usage: plot.py [dataFile] [options (optional)]"
 	print "  Options:"
 	print "   --features #1 #2          Will be used as x-coord,y-coord (default: 2 highest weighted)"
+	#print "   --test-all                Will generate a plot for ALL possible feature combos"
 	#print "   --predictions [file]      Will take file as input for predictions"
 	#print "       --with-predict-error  Will plot with different marker based on error"
 	#print "       --with-predictions    Will plot each point with it's prediction from file"
@@ -42,6 +43,10 @@ if "--features" in sys.argv:
 		print "Features:                " + str(useFeatureAsX) + "," + str(useFeatureAsY)
 	except:
 		printUsageAndExit()
+elif "--test-all" in sys.argv:
+	print "Testing all feature combos!"
+else:
+	print "Compute weight vector and use 2 largest weights"
 
 if "--predictions" in sys.argv:
 	try:
