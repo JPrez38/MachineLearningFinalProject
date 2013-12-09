@@ -6,7 +6,7 @@ import scala.math._
 object DataMerge {
 	var country_year = Map[String,Map[String,List[Any]]]()
 	val inFile = "data/out24.csv"
-	val outFile = "data/out25.csv"
+	val outFile = "data/normaldata.csv"
 	var listLength = 0
 	var totalChange = 0.0
 	var changeCount = 0
@@ -22,6 +22,7 @@ object DataMerge {
 		var tmpMap = country_year.getOrElse("Uruguay",Map[String,List[Any]]())
 		var tmp = tmpMap.getOrElse("2005",List[Any]())
 		listLength = tmp.size
+		elim()
 		//patchLiteracyRates("female")
 		//patchLiteracyRates("male")
 		//patchContreceptiveRate("female")
@@ -33,7 +34,7 @@ object DataMerge {
 		//patchfemaleMaleRatio()
 		//addFemalePop()
 		//normalizeOutput()
-		fullData()
+		//fullData()
 		//outputs()
 		//possibles()
 		//getLiteracyRates()
@@ -46,7 +47,30 @@ object DataMerge {
 		//csv1()
 		//csv4()
 		//println(totalChange/changeCount)
-		//output()
+		output()
+	}
+
+	def elim() {
+		var total = 0
+		for (x <- country_year) {
+			var country = country_year.getOrElse(x._1,Map[String,List[Any]]())
+			for (y <- country) {
+				var add = true
+				for (j <- y._2) {
+					if (j == "x") {
+						add = false
+						country -= y._1
+					}
+				}
+				if (add == true) {
+					total += 1
+					//println(x._1 +  "," + y)
+				}
+
+			}
+			country_year += x._1 -> country
+		}
+		//println(total)
 	}
 
 	def normalizeOutput() {
