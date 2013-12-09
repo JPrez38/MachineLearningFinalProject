@@ -18,6 +18,7 @@ def printUsageAndExit():
 	print "    --model #                # id of learning model to fit data to (default 1)"
 	print "                             1: Ridge Bayesian Regression"
 	print "                             2: Gaussian Naive Bayes"
+	print "    --output [file]          Will output predictions (ordered same as data input) to file"
 	sys.exit()
 #-----------------------------------------------------------------------------------------------------
 
@@ -51,12 +52,21 @@ if "--model" in sys.argv:
 else:
 	mID = 1
 
+
+if "--output" in sys.argv:
+	outFile = open(sys.argv[sys.argv.index("--output") + 1], 'w')
+	output = True
+else:
+	output = False
+
+
 print "  Acceptable error margin:        " + str(errorMargin)
 print "  Explicit test vector breakdown: " + str(breakdown)
 if mID == 1:
 	print "  Training Model:                 Ridge Bayesian Regression"
 elif mID == 2:
 	print "  Training Model:                 GaussianNB"
+print "  Output predictions?             " + str(output)
 
 print "-" * 50
 
@@ -86,6 +96,11 @@ def crunchTestResults(predictions,actuals):
 		margin = math.fabs(actual-prediction)
 		if margin > errorMargin:
 			misses += 1
+			if output:
+				outFile.write(str(prediction) + ",0\n")
+		else:
+			if output:
+				outFile.write(str(prediction) + ",1\n")
 		totalError += margin
 
 	return misses,float(float(misses)/float(len(actuals))),totalError
@@ -157,6 +172,7 @@ testOutPop = convertPopVals(testOuts,testPops)
 print "\nCrunchifying tasty test data stats for review... Yum"
 misses,error,totalError = crunchTestResults(predictPop,testOutPop)
 t6 = time.time()
+if output: print " -> Wrote predictions to output file: " + str(sys.argv[sys.argv.index("--output") + 1])
 print " -> Crunching COMPLETE. " + str(t6-t5) + " seconds."
 
 print "-" * 32
@@ -184,4 +200,3 @@ if breakdown:
 		key = (testKeys[i][0],testKeys[i][1])
 		print str(key) + "; Prediction: " + str(prediction) + "; Actual: " + str(actual)
 		i += 1
-
