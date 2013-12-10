@@ -3,6 +3,11 @@
 import sys,math,operator,time,csv
 from copy import deepcopy
 
+import numpy as np
+import scipy as sp
+import matplotlib.pyplot as plt
+import matplotlib.offsetbox as offsetbox
+
 class support(object):
 
 	def __init__(self):
@@ -33,10 +38,12 @@ class support(object):
 		totalError = 0
 		totalErrorPercentile = 0
 
+		#ERROR CALCULATION. CAN BE CHANGED! -------------------
 		for prediction,actual in zip(predictions,actuals):
 			margin = math.fabs(actual-prediction)
 			if float(margin)/float(actual) > errorMargin:
 				misses += 1
+		#------------------------------------------------------
 			totalError += margin
 			totalErrorPercentile += float(margin)/float(actual)
 
@@ -122,4 +129,18 @@ class support(object):
 			converts.append(float(decimal * pop))
 
 		return deepcopy(converts)
+	#----------------------------------------------------------------------------------------------------
+
+	#----------------------------------------------------------------------------------------------------
+	def plot(self, points, xlabel, ylabel, title, legend, continuous):
+		plt.figure(figsize=(8,6), dpi=80)
+		plt.title(title)
+		plt.xlabel(xlabel)
+		plt.ylabel(ylabel)
+		if continuous:
+			plt.plot(points, color="blue")
+		else:
+			plt.plot(points,'ro')
+		plt.show()
+		return
 	#----------------------------------------------------------------------------------------------------
