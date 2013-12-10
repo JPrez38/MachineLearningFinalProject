@@ -13,7 +13,7 @@ startTime = time.time()
 def printUsageAndExit():
 	print "Usage: bayesRegress.py [dataFile] [testFile] [options (optional)]"
 	print "  Options:"
-	print "    --error-margin #         # of type float (or int) for calculating prediction error"
+	print "    --error-margin #         # is percentile (.##) of acceptable loss"
 	print "    --explicit-breakdown     Will print all test vectors, predictions, and actual values respectively"
 	print "    --model #                # id of learning model to fit data to (default 1)"
 	print "                             1: Ridge Bayesian Regression"
@@ -39,8 +39,10 @@ print "-" * 50
 print "Program arguments: "
 if "--error-margin" in sys.argv:
 	errorMargin = float(sys.argv[sys.argv.index("--error-margin") + 1])
+	if not (errorMargin >= 0.0 and errorMargin <= 1.0):
+		printUsageAndExit()
 else:
-	errorMargin = 1000.00
+	errorMargin = .1
 
 if "--explicit-breakdown" in sys.argv:
 	breakdown = True
@@ -91,19 +93,24 @@ def constructData(reader):
 def crunchTestResults(predictions,actuals):
 	misses = 0
 	totalError = 0
+	totalErrorPercentile = 0
 
 	for prediction,actual in zip(predictions,actuals):
 		margin = math.fabs(actual-prediction)
-		if margin > errorMargin:
+		if float(margin)/float(actual) > errorMargin:
 			misses += 1
-			if output:
-				outFile.write(str(prediction) + ",0\n")
-		else:
-			if output:
-				outFile.write(str(prediction) + ",1\n")
 		totalError += margin
+		totalErrorPercentile += float(margin)/float(actual)
 
-	return misses,float(float(misses)/float(len(actuals))),totalError
+	return misses,float(float(misses)/float(len(actuals))),totalError,totalErrorPercentile
+#----------------------------------------------------------------------------------------------------
+
+#----------------------------------------------------------------------------------------------------
+def writeOutputFile(keysTest, predictions, actuals, predictionsPop, actualsPop):
+	outFile.write("KEY:Country,KEY:Year,Predicted,Actual,PredictedPopulation,ActualPopulation,ErrorPercentile" + "\n")
+	for key,prediction,actual,predictionPop,actualPop in zip(keysTest,predictions,actuals,predictionsPop,actualsPop):
+		outFile.write(str(key[0]) + "," + str(key[1]) + "," + str(prediction) + "," + str(actual) + "," + str(predictionPop) + "," + str(actualPop) + "," + str(float(math.fabs(prediction-actual))/float(actual)) + "\n")
+
 #----------------------------------------------------------------------------------------------------
 
 #----------------------------------------------------------------------------------------------------
@@ -170,7 +177,7 @@ testOutPop = convertPopVals(testOuts,testPops)
 
 
 print "\nCrunchifying tasty test data stats for review... Yum"
-misses,error,totalError = crunchTestResults(predictPop,testOutPop)
+misses,error,totalError,totalErrorPercentile = crunchTestResults(predictPop,testOutPop)
 t6 = time.time()
 if output: print " -> Wrote predictions to output file: " + str(sys.argv[sys.argv.index("--output") + 1])
 print " -> Crunching COMPLETE. " + str(t6-t5) + " seconds."
@@ -182,15 +189,24 @@ print "  Training Vectors:      " + str(len(data)) + " from file: " + str(sys.ar
 print "  Testing Vectors:       " + str(len(testData)) + " from file: " + str(sys.argv[2])
 print "  Accuracy Summary:      " 
 print "      -------------------------------------------------------"
+print "      |        *****Correct/Incorrect Stats******"
 print "      | " + str(len(testData) - misses) + " correct"
 print "      | " + str(misses) + " incorrect"
 print "      | " + str(len(testData)) + " total"
-print "      | Prediction Accuracy:   " + str(1 - error)
-print "      | Prediction Inaccuracy: " + str(error)
+print "      | Prediction Accuracy:      " + str(1 - error)
+print "      | Prediction Inaccuracy:    " + str(error)
+print "      |"
+print "      |        *****Marginal Accuracy Stats******"
 #print "      | Total Error:           " + str(totalError)
-print "      | Average Error:         " + str(float(totalError) / float(len(testData)))
+print "      | Average Error:            " + str(float(totalError) / float(len(testData)))
+print "      | Average Error Percentile: " + str(float(totalErrorPercentile) / float(len(testData)))
 print "      -------------------------------------------------------"
 print "  Total Time:            " + str(time.time() - startTime) + " seconds"
+
+if output:
+	print "\n  -> Writing outputs to file: " + str(sys.argv[sys.argv.index("--output") + 1])
+	writeOutputFile(testKeys,predictions,testOuts,predictPop,testOutPop)
+
 
 if breakdown:
 	print "-" * 32
