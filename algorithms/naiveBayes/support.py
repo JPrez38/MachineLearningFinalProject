@@ -96,6 +96,25 @@ class support(object):
 	#----------------------------------------------------------------------------------------------------
 
 	#----------------------------------------------------------------------------------------------------
+	def normalize_crossval(self,data):
+		normTrainData = deepcopy(data)
+
+		maxs = [0.0] * 12
+		#find maximums
+		for indexVector,vector in enumerate(normTrainData):
+			for i in range(0,12):
+				if vector[i] > maxs[i]:
+					maxs[i] = normTrainData[indexVector][i]
+
+		#normalize
+		for trainVecInd,trainVec in enumerate(normTrainData):
+			for j in range(0,12):
+				normTrainData[trainVecInd][j] /= maxs[j]
+
+		return deepcopy(normTrainData),deepcopy(maxs)
+	#----------------------------------------------------------------------------------------------------
+
+	#----------------------------------------------------------------------------------------------------
 	def convertPopVals(self, decimals, population):
 		converts = []
 

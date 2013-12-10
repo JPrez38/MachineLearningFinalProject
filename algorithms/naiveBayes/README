@@ -1,0 +1,5 @@
+For non-crossvalidation:
+	Usage: bayesMain.py [trainFile.csv] [testFile.csv] [options]
+
+For crossvalidation:
+	UsageL bayesMain.py [dataFile.csv] [--crossval # (# = fold, default 5)] [options]

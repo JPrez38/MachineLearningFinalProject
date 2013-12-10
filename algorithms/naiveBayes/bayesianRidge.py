@@ -8,6 +8,7 @@ import support
 from sklearn import linear_model
 from sklearn.naive_bayes import GaussianNB
 from sklearn import preprocessing
+import numpy as np
 
 class BayesianRidge(object):
 	errorMargin = .5
@@ -21,7 +22,8 @@ class BayesianRidge(object):
 
 	#-----------------------------------------------------------------------------------------------------
 	def printUsageAndExit(self):
-		print "Usage: bayesRegress.py [dataFile] [testFile] [options (optional)]"
+		print "Usage: bayesMain.py [dataFile] [testFile] [options (optional)]"
+		print "NO CROSS VALIDATION!"
 		print "  Options:"
 		print "    --error-margin #         # is percentile (.##) of acceptable loss"
 		print "                             (default=.5)"
@@ -95,6 +97,7 @@ class BayesianRidge(object):
 			print "  Training Model:                 GaussianNB"
 		print "  Normalize features?             " + str(normalize)
 		print "  Output predictions?             " + str(output)
+		print "  Crossvalidation?                False"
 
 		print "-" * 50
 		print ""
@@ -143,7 +146,9 @@ class BayesianRidge(object):
 			print "Fitting Bayesian Ridge model to " + str(len(data)) + " vectors:"
 			print " -> Using " + str(len(data)) + " vectors."
 			model = linear_model.BayesianRidge()
-			model.fit(data,outs)
+			dataMatrix = np.array(data)
+			outsMatrix = np.array(outs)
+			model.fit(dataMatrix,outsMatrix)
 			t4 = time.time()
 			print " -> Training COMPLETE. " + str(t4-t3) + " seconds."
 			print "      Weight vector:\n" + str(model.coef_)
