@@ -188,6 +188,14 @@ class BayesianRidge_crossVal(object):
 				plt.plot(accuracy,color=colors[i-2],label="k = " + str(i))
 
 			plt.legend(loc=4)
+
+			plt.figure(figsize=(8,6), dpi=80)
+			plt.title("Average Accuracy for All Folds at " + str(errorMargin) + " Error Margin")
+			plt.xlabel("--crossval # (k-2)")
+			plt.ylabel("Average Accuracy Per Full Pass")
+			plt.xticks(np.linspace(0,crossvalNum,crossvalNum+1,endpoint=True))
+			plt.plot(avgAccuracyTotal,color="green")
+
 			plt.show()
 
 
@@ -195,6 +203,12 @@ class BayesianRidge_crossVal(object):
 			accuracy,avgAccuracy = self.crossVal(data,outs,pops,actuals,errorMargin,crossvalNum, sup)
 
 			#print out test results before graphing
+			print "CROSSVALIDATION BREAKDOWN"
+			print "  ---------------------------------------------------------------------------"
+			print "  | Average Accuracy of Crossvalidation =   " + str(avgAccuracy)
+			print "  | KMeans, k =                             " + str(crossvalNum)
+			print "  | Validation Set Size =                   " + str(len(data)/int(crossvalNum)) + " datapoints"
+			print "  ---------------------------------------------------------------------------"
 
 			plt.figure(figsize=(8,6), dpi=80)
 			plt.title("Accuracy of KMeans within " + str(errorMargin) + " Margin")
