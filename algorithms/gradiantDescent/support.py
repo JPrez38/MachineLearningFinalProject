@@ -24,10 +24,10 @@ class support(object):
 		for index,vec in enumerate(reader):
 			if 'x' not in vec:
 				keys.append((vec[0],vec[1]))
-				data.append([int(vec[2]),int(vec[3]),float(vec[4]),float(vec[5]),float(vec[6]),float(vec[7]),float(vec[8]),float(vec[9]),float(vec[10]),float(vec[11]),float(vec[12]),float(vec[13])])
+				data.append([float(vec[2]),float(vec[3]),float(vec[4]),float(vec[5]),float(vec[6]),float(vec[7]),float(vec[8]),float(vec[9]),float(vec[10]),float(vec[11]),float(vec[12]),float(vec[13])])
 				outs.append(float(vec[16]))
 				actuals.append(float(vec[14]))
-				pops.append(int(vec[15]))
+				pops.append(float(vec[15]))
 
 		return deepcopy(keys),deepcopy(data),deepcopy(outs),deepcopy(actuals),deepcopy(pops)
 	#----------------------------------------------------------------------------------------------------
@@ -116,7 +116,7 @@ class support(object):
 		#normalize
 		for trainVecInd,trainVec in enumerate(normTrainData):
 			for j in range(0,12):
-				normTrainData[trainVecInd][j] /= maxs[j]
+				normTrainData[trainVecInd][j] /= float(maxs[j])
 
 		return deepcopy(normTrainData),deepcopy(maxs)
 	#----------------------------------------------------------------------------------------------------
