@@ -6,6 +6,7 @@ import scipy as sp
 
 import matplotlib.pyplot as plt
 import matplotlib.offsetbox as offsetbox
+from mpl_toolkits.mplot3d import Axes3D
 
 from sklearn.cluster import KMeans
 from sklearn.decomposition import PCA
@@ -66,17 +67,37 @@ print " -> " + str(len(data)) + " vectors generated\n"
 numpyData = np.array(data)
 numpyOuts = np.array(outs)
 
+pca = PCA(n_components=3)
+reducedData = pca.fit_transform(numpyData)
+
+print reducedData
+
+fig = plt.figure()
+ax = Axes3D(fig)
+
+#for j in range(0,k):
+ax.plot(reducedData[:,0],reducedData[:,1],reducedData[:,2],'o')
+plt.show()
+
+
 kmeans = KMeans(n_clusters=k)
-kmeans.fit(numpyData)
+kmeans.fit(reducedData)
 
 labels = kmeans.labels_
 centroids = kmeans.cluster_centers_
 
+#2d plot
 for i in range(k):
-	ds = numpyData[np.where(labels==i)]
+	ds = reducedData[np.where(labels==i)]
 	plt.plot(ds[:,0],ds[:,1],'o')
 	lines = plt.plot(centroids[i,0],centroids[i,1],'kx')
 	plt.setp(lines,ms=15.0)
 	plt.setp(lines,mew=2.0)
 
 plt.show()
+
+
+#3d plot
+fig2 = plt.figure()
+ax2 = Axes3D*(fig2)
+
