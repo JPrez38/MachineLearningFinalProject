@@ -31,7 +31,7 @@ class BayesianRidge(object):
 		print "    --model #                # id of learning model to fit data to"
 		print "                             (default 1)"
 		print "        1: Ridge Bayesian Regression"
-		#print "        2: Gaussian Naive Bayes"
+		print "        2: Linear Regression"
 		print "    --normalize              Will normalize features before fitting model"
 		print "    --output [file]          Will output predictions (ordered same"
 		print "                             as data input) to file"
@@ -94,7 +94,7 @@ class BayesianRidge(object):
 		if mID == 1:
 			print "  Training Model:                 Ridge Bayesian Regression"
 		elif mID == 2:
-			print "  Training Model:                 GaussianNB"
+			print "  Training Model:                 Linear Regression"
 		print "  Normalize features?             " + str(normalize)
 		print "  Output predictions?             " + str(output)
 		print "  Crossvalidation?                False"
@@ -153,12 +153,25 @@ class BayesianRidge(object):
 			print " -> Training COMPLETE. " + str(t4-t3) + " seconds."
 			print "      Weight vector:\n" + str(model.coef_)
 
-		#GAUSSIAN NB
+		#LINEAR REGRESSION
 		elif mID == 2:
+			print "Fitting Linear Regression model to " + str(len(data)) + " vectors:"
+			print " -> Using " + str(len(data)) + " vectors."
+			model = linear_model.LinearRegression()
+			dataMatrix = np.array(data)
+			outsMatrix = np.array(outs)
+			model.fit(dataMatrix,outsMatrix)
+			t4 = time.time()
+			print " -> Training COMPLETE. " + str(t4-t3) + " seconds."
+
+		#GAUSSIAN NB
+		elif mID == 3:
 			print "Fitting GaussianNB model to " + str(len(data)) + " vectors:"
 			print " -> Using " + str(len(data)) + " vectors."
 			model = GaussianNB()
-			model.fit(data,outs)
+			dataMatrix = np.array(data)
+			outsMatrix = np.array(outs)
+			model.fit(dataMatrix,outsMatrix)
 			t4 = time.time()
 			print " -> Training COMPLETE. " + str(t4-t3) + " seconds."
 
@@ -206,7 +219,7 @@ class BayesianRidge(object):
 			print "\n  -> Writing outputs to file: " + str(sys.argv[sys.argv.index("--output") + 1])
 			info = [0] * 5
 			#model
-			info[0] = "Naive Bayesian Ridge" if model==1 else "GaussianNB"
+			info[0] = "Naive Bayesian Ridge" if model==1 else "Linear Regression"
 			#numvectors
 			info[1] = len(data)
 			info[2] = len(testData)
