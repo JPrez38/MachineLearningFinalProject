@@ -57,18 +57,27 @@ def checkArgs():
 	else:
 		components = 3
 
+	if "--output" in sys.argv:
+		try:
+			outFile = open(sys.argv[sys.argv.index("--output")+1], 'w')
+		except:
+			printUsageAndExit("Error occured opening output file")
+	else:
+		outFile = ""
+
 	print "Program Arguments"
 	print "-" * 64
 	print "Data File:        " + str(sys.argv[1])
 	print "k =               " + str(k)
 	print "num_components =  " + str(components)
+	print "Outfile:          " + str(outFile)
 	print "-" * 64
 
-	return reader,k,components
+	return reader,k,components,outFile
 #----------------------------------------------------------------------
 
 #check and get args
-reader,k,components = checkArgs()
+reader,k,components,outFile = checkArgs()
 
 
 print "Constructing data..."
@@ -119,5 +128,15 @@ plt.setp(lines,mew=2.0)
 plt.title(str(k) + "-Means Clustered Reduced Data, Plotted by First 3 PCs")
 plt.show()
 
+
 #OUTPUTS
-for dataPoint,dataOut,dataLabel in zip(data,outs,label):
+if "--output" in sys.argv:
+	for dataKey,dataPoint,dataOut,dataLabel in zip(keys,data,outs,labels):
+		for key in dataKey:
+			outFile.write(str(key) + ",")
+
+		for val in dataPoint:
+			outFile.write(str(val) + ",")
+
+		outFile.write(str(dataOut) + ",")
+		outFile.write(str(dataLabel) + "\n")
