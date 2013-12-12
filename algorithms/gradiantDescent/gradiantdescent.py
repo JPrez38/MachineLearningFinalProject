@@ -10,6 +10,7 @@ import matplotlib.offsetbox as offsetbox
 from sklearn.cluster import KMeans
 from sklearn.decomposition import PCA
 from sklearn.preprocessing import scale
+from sklearn.linear_model import SGDClassifier
 
 import support
 
@@ -33,7 +34,7 @@ def checkArgs():
 		printUsageAndExit("")
 
 	try:
-		reader = csv.reader(open(sys.argv[1], 'rb'), dialect='excel-tab')
+		reader = csv.reader(open(sys.argv[1], 'rb'), quoting=csv.QUOTE_NONE)
 	except:
 		printUsageAndExit("Error occured opening specified file")
 
@@ -45,3 +46,16 @@ reader = checkArgs()
 
 print "Constructing data..."
 keys,data,outs,actuals,pops = sup.constructData(reader)
+
+print " -> " + str(len(data)) + " vectors generated\n"
+
+normdata,maxs = sup.normalize_crossval(data)
+
+numpyData = np.array(normdata)
+numpyOuts = np.array(outs)
+
+print normdata
+
+
+clf = SGDClassifier(loss="squared_loss")
+#clf.fit(normdata,outs)
