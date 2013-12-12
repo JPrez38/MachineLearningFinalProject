@@ -34,7 +34,7 @@ def checkArgs():
 		printUsageAndExit("")
 
 	try:
-		reader = csv.reader(open(sys.argv[1], 'rb'), quoting=csv.QUOTE_NONE)
+		reader = csv.reader(open(sys.argv[1], 'rU'), quoting=csv.QUOTE_NONE)
 	except:
 		printUsageAndExit("Error occured opening specified file")
 
@@ -54,8 +54,14 @@ normdata,maxs = sup.normalize_crossval(data)
 numpyData = np.array(normdata)
 numpyOuts = np.array(outs)
 
-print normdata
+
+newj = [0.1,.89]*12
+newy = [newj]*1459
+newx = [0.3]*1459
+newx[3] = .54
+print(len(newx))
+print(newy)
 
 
 clf = SGDClassifier(loss="squared_loss")
-#clf.fit(normdata,outs)
+clf.fit(newy,newx)
