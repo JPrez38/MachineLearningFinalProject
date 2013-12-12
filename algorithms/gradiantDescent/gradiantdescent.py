@@ -10,7 +10,9 @@ import matplotlib.offsetbox as offsetbox
 from sklearn.cluster import KMeans
 from sklearn.decomposition import PCA
 from sklearn.preprocessing import scale
-from sklearn.linear_model import SGDClassifier
+from sklearn.linear_model import SGDRegressor
+
+import random as rand
 
 import support
 
@@ -54,14 +56,12 @@ normdata,maxs = sup.normalize_crossval(data)
 numpyData = np.array(normdata)
 numpyOuts = np.array(outs)
 
+print numpyOuts
 
-newj = [0.1,.89]*12
-newy = [newj]*1459
-newx = [0.3]*1459
-newx[3] = .54
-print(len(newx))
-print(newy)
+outsTest = []
+for i in range(len(data)):
+	outsTest.append(rand.randint(0,1))
+print outsTest
 
-
-clf = SGDClassifier(loss="squared_loss")
-clf.fit(newy,newx)
+clf = SGDRegressor(loss="squared_loss")
+clf.fit(numpyData,numpyOuts)
