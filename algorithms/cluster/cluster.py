@@ -64,6 +64,7 @@ keys,data,outs,actuals,pops = sup.constructData(reader)
 print " -> " + str(len(data)) + " vectors generated\n"
 
 numpyData = np.array(data)
+numpyOuts = np.array(outs)
 
 kmeans = KMeans(n_clusters=k)
 kmeans.fit(numpyData)
