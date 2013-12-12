@@ -22,8 +22,9 @@ def printUsageAndExit(error):
 	print "ARGUMENT ERROR: " + str(error)
 	print "Usage: kmeans.py [dataFile] [options (optional)]"
 	print "  Options:"
-	print "    --k #           Sets the number of clusters (default = 5)"
-	print "    --components #  Sets num_components for PCA (default = 3)"
+	print "    --k #             Sets the number of clusters (default = 5)"
+	print "    --components #    Sets num_components for PCA (default = 3)"
+	print "    --outfile [file]  Gives program a file to output clustered data"
 	print "-" * 64
 	sys.exit()
 #----------------------------------------------------------------------
@@ -35,7 +36,7 @@ def checkArgs():
 		printUsageAndExit("")
 
 	try:
-		reader = csv.reader(open(sys.argv[1], 'rb'), quoting=csv.QUOTE_NONE)
+		reader = csv.reader(open(sys.argv[1], 'rU'), quoting=csv.QUOTE_NONE)
 	except:
 		printUsageAndExit("Error occured opening specified file")
 
@@ -119,4 +120,4 @@ plt.title(str(k) + "-Means Clustered Reduced Data, Plotted by First 3 PCs")
 plt.show()
 
 #OUTPUTS
-for zip1,zip2 in zip(zip(data,outs),):
+for dataPoint,dataOut,dataLabel in zip(data,outs,label):
