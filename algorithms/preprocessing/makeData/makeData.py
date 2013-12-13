@@ -19,7 +19,7 @@ if len(sys.argv) < 4:
 	printUsageAndExit()
 
 try:
-	reader = csv.reader(open(sys.argv[1], 'rb'), quoting=csv.QUOTE_NONE)
+	reader = csv.reader(open(sys.argv[1], 'rU'), quoting=csv.QUOTE_NONE)
 	trainFile = open(sys.argv[2],'w')
 	testFile = open(sys.argv[3],'w')
 except:

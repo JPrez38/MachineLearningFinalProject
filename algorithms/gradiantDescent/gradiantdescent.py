@@ -11,7 +11,12 @@ from sklearn.cluster import KMeans
 from sklearn.decomposition import PCA
 from sklearn.preprocessing import scale
 from sklearn.linear_model import SGDRegressor
+<<<<<<< HEAD
 from sklearn import svm
+=======
+
+import random as rand
+>>>>>>> 51b178c003ced5ca16aecaff6810567bccec0c1a
 
 import support
 
@@ -76,6 +81,7 @@ normdata,normTestData,maxs = sup.normalize(data,tstdata)
 
 numpyOuts = np.array(outs)
 
+<<<<<<< HEAD
 avg = np.average(numpyOuts)
 
 avgPredictions = [avg]*len(outs)
@@ -89,3 +95,14 @@ svmPredict(normdata,normTestData,outs,tstOuts)
 
 
 
+=======
+print numpyOuts
+
+outsTest = []
+for i in range(len(data)):
+	outsTest.append(rand.randint(0,1))
+print outsTest
+
+clf = SGDRegressor(loss="squared_loss")
+clf.fit(numpyData,numpyOuts)
+>>>>>>> 51b178c003ced5ca16aecaff6810567bccec0c1a

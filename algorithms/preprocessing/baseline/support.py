@@ -38,22 +38,14 @@ class support(object):
 		totalError = 0
 		totalErrorPercentile = 0
 
-		maxError = 0.0
-		index = 0
-
 		#ERROR CALCULATION. CAN BE CHANGED! -------------------
 		for prediction,actual in zip(predictions,actuals):
 			margin = math.fabs(actual-prediction)
 			if float(margin)/float(actual) > errorMargin:
 				misses += 1
-				if float(margin)/float(actual) > maxError:
-					maxError = float(margin)/float(actual)
-			index += 1
 		#------------------------------------------------------
 			totalError += margin
 			totalErrorPercentile += float(margin)/float(actual)
-
-		print "CONFIDENCE INTERVAL = " + str(maxError)
 
 		return misses,float(float(misses)/float(len(actuals))),totalError,totalErrorPercentile
 	#----------------------------------------------------------------------------------------------------
@@ -124,7 +116,7 @@ class support(object):
 		#normalize
 		for trainVecInd,trainVec in enumerate(normTrainData):
 			for j in range(0,12):
-				normTrainData[trainVecInd][j] /= maxs[j]
+				normTrainData[trainVecInd][j] /= float(maxs[j])
 
 		return deepcopy(normTrainData),deepcopy(maxs)
 	#----------------------------------------------------------------------------------------------------

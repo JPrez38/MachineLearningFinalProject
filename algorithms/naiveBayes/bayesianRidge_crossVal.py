@@ -44,7 +44,7 @@ class BayesianRidge_crossVal(object):
 			self.printUsageAndExit()
 
 		try:
-			dataReader = csv.reader(open(sys.argv[1], 'rb'), quoting=csv.QUOTE_NONE)
+			dataReader = csv.reader(open(sys.argv[1], 'rU'), quoting=csv.QUOTE_NONE)
 		except:
 			self.printUsageAndExit()
 
@@ -175,7 +175,7 @@ class BayesianRidge_crossVal(object):
 			avgAccuracyTotal = []
 
 			plt.figure(figsize=(8,6), dpi=80)
-			plt.title("Accuracy of KMeans within " + str(errorMargin) + " Margin")
+			plt.title("Test Accuracy of KMeans within " + str(errorMargin) + " Margin")
 			plt.xlabel("Crossvalidation Fold #")
 			plt.ylabel("Average Accuracy Per Full Pass")
 			plt.xticks(np.linspace(0,crossvalNum,crossvalNum+1,endpoint=True))
@@ -190,7 +190,7 @@ class BayesianRidge_crossVal(object):
 			plt.legend(loc=4)
 
 			plt.figure(figsize=(8,6), dpi=80)
-			plt.title("Average Accuracy for All Folds at " + str(errorMargin) + " Error Margin")
+			plt.title("Test Average Accuracy for All Folds at " + str(errorMargin) + " Error Margin")
 			plt.xlabel("--crossval # (k-2)")
 			plt.ylabel("Average Accuracy Per Full Pass")
 			plt.xticks(np.linspace(0,crossvalNum,crossvalNum+1,endpoint=True))
@@ -207,11 +207,11 @@ class BayesianRidge_crossVal(object):
 			print "  ---------------------------------------------------------------------------"
 			print "  | Average Accuracy of Crossvalidation =   " + str(avgAccuracy)
 			print "  | KMeans, k =                             " + str(crossvalNum)
-			print "  | Validation Set Size =                   " + str(len(data)/int(crossvalNum)) + " datapoints"
+			print "  | Test Set Size =                   " + str(len(data)/int(crossvalNum)) + " datapoints"
 			print "  ---------------------------------------------------------------------------"
 
 			plt.figure(figsize=(8,6), dpi=80)
-			plt.title("Accuracy of KMeans within " + str(errorMargin) + " Margin")
+			plt.title("Test Accuracy of KMeans within " + str(errorMargin) + " Margin")
 			plt.xlabel("Crossvalidation Fold #")
 			plt.ylabel("Average Accuracy Per Full Pass")
 			plt.xticks(np.linspace(0,len(accuracy),len(accuracy)+1,endpoint=True))
