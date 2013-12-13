@@ -11,12 +11,16 @@ from sklearn.cluster import KMeans
 from sklearn.decomposition import PCA
 from sklearn.preprocessing import scale
 from sklearn.linear_model import SGDRegressor
-<<<<<<< HEAD
+from sklearn.cross_validation import cross_val_score
 from sklearn import svm
-=======
+from sklearn.datasets import make_blobs
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.ensemble import ExtraTreesClassifier
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.ensemble import GradientBoostingClassifier
+from sklearn.lda import LDA
 
 import random as rand
->>>>>>> 51b178c003ced5ca16aecaff6810567bccec0c1a
 
 import support
 
@@ -68,6 +72,31 @@ def svmPredict(trainData,testData,trainOuts,testOuts):
 	misses,error = sup.crunchTestResults(predictions,testOuts,.5)
 	print(1-error)
 
+def extremeRand(trainData,testData,trainOuts,testOuts):
+	clf = ExtraTreesClassifier(n_estimators=5, max_depth=10,
+      min_samples_split=1, random_state=2)
+	print(clf.fit(trainData,trainOuts))
+	predictions = clf.predict(testData)
+	print(predictions)
+	misses,error = sup.crunchTestResults(predictions,testOuts,.5)
+	print(1-error)
+
+def ldapredict(trainData,testData,trainOuts,testOuts):
+	clf = LDA()
+	print(clf.fit(trainData,trainOuts))
+	predictions = clf.predict(testData)
+	print(predictions)
+	misses,error = sup.crunchTestResults(predictions,testOuts,.5)
+	print(1-error)
+
+def randomForest(trainData,testData,trainOuts,testOuts):
+	clf = RandomForestClassifier(max_depth=50)
+	print(clf.fit(trainData,trainOuts))
+	predictions = clf.predict(testData)
+	print(predictions)
+	misses,error = sup.crunchTestResults(predictions,testOuts,.5)
+	print(1-error)
+
 reader,testReader = checkArgs()
 
 
@@ -81,7 +110,6 @@ normdata,normTestData,maxs = sup.normalize(data,tstdata)
 
 numpyOuts = np.array(outs)
 
-<<<<<<< HEAD
 avg = np.average(numpyOuts)
 
 avgPredictions = [avg]*len(outs)
@@ -90,19 +118,9 @@ avgmisses,avgerror = sup.crunchTestResults(avgPredictions,tstOuts,.5)
 print(1-avgerror)
 
 
-gradiantDescent(normdata,normTestData,outs,tstOuts)
-svmPredict(normdata,normTestData,outs,tstOuts)
+#gradiantDescent(normdata,normTestData,outs,tstOuts)
+#svmPredict(normdata,normTestData,outs,tstOuts)
+#extremeRand(normdata,normTestData,outs,tstOuts)
+#ldapredict(normdata,normTestData,outs,tstOuts)
+randomForest(normdata,normTestData,outs,tstOuts)
 
-
-
-=======
-print numpyOuts
-
-outsTest = []
-for i in range(len(data)):
-	outsTest.append(rand.randint(0,1))
-print outsTest
-
-clf = SGDRegressor(loss="squared_loss")
-clf.fit(numpyData,numpyOuts)
->>>>>>> 51b178c003ced5ca16aecaff6810567bccec0c1a
