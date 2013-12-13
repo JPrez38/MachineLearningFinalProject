@@ -13,17 +13,15 @@ class GeoSupport(object):
 
 	#--------------------------------------------------------------------------------------------
 	def codeToCountry(self, code):
-		codeDict = {
-			0 : 'North America'
-			1 : 'Central America'
-			2 : 'South America'
-			3 : 'Western Europe'
-			4 : 'Eastern Europe'
-			5 : 'Africa'
-			6 : 'Middle East'
-			7 : 'Asia'
+		codeDict = {0 : 'North America',
+			1 : 'Central America',
+			2 : 'South America',
+			3 : 'Western Europe',
+			4 : 'Eastern Europe',
+			5 : 'Africa',
+			6 : 'Middle East',
+			7 : 'Asia',
 			8 : 'South East Asia'
-			9 : 'Baltic'
 		}
 
 		return codeDict[code]
@@ -35,7 +33,7 @@ class GeoSupport(object):
 
 		# Data organization:
 		# Each country is an array within the data array that looks like:
-		# [[country, year], [features,...], [actual percentile], cluster #, geo code]
+		# [[country, year], [features,...], [actual percentile], geo code, cluster id]
 
 		cluster = []
 
@@ -45,11 +43,12 @@ class GeoSupport(object):
 
 				datapoint.append([vec[0],vec[1]])
 				datapoint.append([vec[2],vec[3],vec[4],vec[5],vec[6],vec[7],vec[8],vec[9],vec[10],vec[11],vec[12],vec[13]])
-				datapoint.append(vec[14])
-				datapoint.append(vec[15])
+				datapoint.append(vec[14]) #output
+				datapoint.append(vec[15]) #country code
+				datapoint.append(vec[16]) #clusterID
 
-				if vec[14] not in cluster:
-					cluster.append(vec[14])
+				if vec[16] not in cluster:
+					cluster.append(vec[16])
 
 				data.append(datapoint)
 

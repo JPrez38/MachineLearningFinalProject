@@ -24,7 +24,7 @@ def printUsageAndExit(error):
 	print "  Options:"
 	print "    --k #             Sets the number of clusters (default = 5)"
 	print "    --components #    Sets num_components for PCA (default = 3)"
-	print "    --outfile [file]  Gives program a file to output clustered data"
+	print "    --output [file]   Gives program a file to output clustered data"
 	print "-" * 64
 	sys.exit()
 #----------------------------------------------------------------------
