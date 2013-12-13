@@ -19,6 +19,7 @@ from sklearn.ensemble import ExtraTreesClassifier
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.ensemble import GradientBoostingClassifier
 from sklearn.lda import LDA
+from sklearn import gaussian_process
 
 import random as rand
 
@@ -97,6 +98,14 @@ def randomForest(trainData,testData,trainOuts,testOuts):
 	misses,error = sup.crunchTestResults(predictions,testOuts,.5)
 	print(1-error)
 
+def demGaussians(trainData,testData,trainOuts,testOuts):
+	clf = gaussian_process.GaussianProcess(theta0=1e-2, thetaL=1e-4, thetaU=1e-1)
+	print(clf.fit(trainData,trainOuts))
+	predictions = clf.predict(testData)
+	print(predictions)
+	misses,error = sup.crunchTestResults(predictions,testOuts,.5)
+	print(1-error)
+
 reader,testReader = checkArgs()
 
 
@@ -118,9 +127,10 @@ avgmisses,avgerror = sup.crunchTestResults(avgPredictions,tstOuts,.5)
 print(1-avgerror)
 
 
-#gradiantDescent(normdata,normTestData,outs,tstOuts)
-#svmPredict(normdata,normTestData,outs,tstOuts)
-#extremeRand(normdata,normTestData,outs,tstOuts)
+gradiantDescent(normdata,normTestData,outs,tstOuts)
+svmPredict(normdata,normTestData,outs,tstOuts)
+extremeRand(normdata,normTestData,outs,tstOuts)
 #ldapredict(normdata,normTestData,outs,tstOuts)
 randomForest(normdata,normTestData,outs,tstOuts)
+demGaussians(normdata,normTestData,outs,tstOuts)
 
