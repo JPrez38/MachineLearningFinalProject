@@ -44,8 +44,8 @@ class BayesianRidge(object):
 			self.printUsageAndExit()
 
 		try:
-			dataReader = csv.reader(open(sys.argv[1], 'rb'), quoting=csv.QUOTE_NONE)
-			testReader = csv.reader(open(sys.argv[2], 'rb'), quoting=csv.QUOTE_NONE)
+			dataReader = csv.reader(open(sys.argv[1], 'rU'), quoting=csv.QUOTE_NONE)
+			testReader = csv.reader(open(sys.argv[2], 'rU'), quoting=csv.QUOTE_NONE)
 		except:
 			self.printUsageAndExit()
 
