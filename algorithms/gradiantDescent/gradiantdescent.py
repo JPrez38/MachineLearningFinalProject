@@ -10,7 +10,8 @@ import matplotlib.offsetbox as offsetbox
 from sklearn.cluster import KMeans
 from sklearn.decomposition import PCA
 from sklearn.preprocessing import scale
-from sklearn.linear_model import SGDClassifier
+from sklearn.linear_model import SGDRegressor
+from sklearn import svm
 
 import support
 
@@ -20,9 +21,8 @@ sup = support.support()
 def printUsageAndExit(error):
 	print "-" * 64
 	print "ARGUMENT ERROR: " + str(error)
-	print "Usage: kmeans.py [dataFile] [options (optional)]"
+	print "Usage: gradientdescent.py [dataFile] [testFile] [options (optional)]"
 	print "  Options:"
-	print "    --k #           Sets the number of clusters (default = 5)"
 	print "-" * 64
 	sys.exit()
 #----------------------------------------------------------------------
@@ -30,7 +30,7 @@ def printUsageAndExit(error):
 #----------------------------------------------------------------------
 def checkArgs():
 
-	if len(sys.argv) < 2:
+	if len(sys.argv) < 3:
 		printUsageAndExit("")
 
 	try:
@@ -38,30 +38,54 @@ def checkArgs():
 	except:
 		printUsageAndExit("Error occured opening specified file")
 
-	return reader
+	try:
+		testReader = csv.reader(open(sys.argv[2], 'rU'), quoting=csv.QUOTE_NONE)
+	except:
+		printUsageAnExit("Error")
+
+	return reader,testReader
 #----------------------------------------------------------------------
 
-reader = checkArgs()
+def gradiantDescent(trainData,testData,trainOuts,testOuts):
+	clf = SGDRegressor(loss="squared_loss")
+	print(clf.fit(trainData,trainOuts))
+	print(clf.coef_)
+	predictions = clf.predict(testData)
+	print(predictions)
+	misses,error = sup.crunchTestResults(predictions,testOuts,.5)
+	print(1-error)
+
+def svmPredict(trainData,testData,trainOuts,testOuts):
+	clf = svm.SVR()
+	print(clf.fit(trainData,trainOuts))
+	predictions = clf.predict(testData)
+	print(predictions)
+	misses,error = sup.crunchTestResults(predictions,testOuts,.5)
+	print(1-error)
+
+reader,testReader = checkArgs()
 
 
 print "Constructing data..."
 keys,data,outs,actuals,pops = sup.constructData(reader)
+tstKeys,tstdata,tstOuts,tstActuals,tstPops = sup.constructData(testReader)
 
 print " -> " + str(len(data)) + " vectors generated\n"
 
-normdata,maxs = sup.normalize_crossval(data)
+normdata,normTestData,maxs = sup.normalize(data,tstdata)
 
-numpyData = np.array(normdata)
 numpyOuts = np.array(outs)
 
+avg = np.average(numpyOuts)
 
-newj = [0.1,.89]*12
-newy = [newj]*1459
-newx = [0.3]*1459
-newx[3] = .54
-print(len(newx))
-print(newy)
+avgPredictions = [avg]*len(outs)
+
+avgmisses,avgerror = sup.crunchTestResults(avgPredictions,tstOuts,.5)
+print(1-avgerror)
 
 
-clf = SGDClassifier(loss="squared_loss")
-clf.fit(newy,newx)
+gradiantDescent(normdata,normTestData,outs,tstOuts)
+svmPredict(normdata,normTestData,outs,tstOuts)
+
+
+

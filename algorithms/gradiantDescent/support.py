@@ -47,7 +47,7 @@ class support(object):
 			totalError += margin
 			totalErrorPercentile += float(margin)/float(actual)
 
-		return misses,float(float(misses)/float(len(actuals))),totalError,totalErrorPercentile
+		return misses,float(float(misses)/float(len(actuals)))
 	#----------------------------------------------------------------------------------------------------
 
 	#----------------------------------------------------------------------------------------------------
