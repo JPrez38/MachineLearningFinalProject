@@ -20,6 +20,7 @@ class support(object):
 		outs = []
 		pops = []
 		actuals = []
+		codes = []
 
 		for index,vec in enumerate(reader):
 			if 'x' not in vec:
@@ -28,8 +29,9 @@ class support(object):
 				outs.append(float(vec[16]))
 				actuals.append(float(vec[14]))
 				pops.append(float(vec[15]))
+				codes.append(int(vec[17]))
 
-		return deepcopy(keys),deepcopy(data),deepcopy(outs),deepcopy(actuals),deepcopy(pops)
+		return deepcopy(keys),deepcopy(data),deepcopy(outs),deepcopy(actuals),deepcopy(pops),deepcopy(codes)
 	#----------------------------------------------------------------------------------------------------
 
 	#----------------------------------------------------------------------------------------------------

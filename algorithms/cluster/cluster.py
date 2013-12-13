@@ -81,7 +81,7 @@ reader,k,components,outFile = checkArgs()
 
 
 print "Constructing data..."
-keys,data,outs,actuals,pops = sup.constructData(reader)
+keys,data,outs,actuals,pops,codes = sup.constructData(reader)
 print " -> " + str(len(data)) + " vectors generated\n"
 
 numpyData = np.array(data)
@@ -131,7 +131,7 @@ plt.show()
 
 #OUTPUTS
 if "--output" in sys.argv:
-	for dataKey,dataPoint,dataOut,dataLabel in zip(keys,data,outs,labels):
+	for dataKey,dataPoint,dataOut,dataLabel,code in zip(keys,data,outs,labels,codes):
 		for key in dataKey:
 			outFile.write(str(key) + ",")
 
@@ -139,4 +139,5 @@ if "--output" in sys.argv:
 			outFile.write(str(val) + ",")
 
 		outFile.write(str(dataOut) + ",")
+		outFile.write(str(code) + ",")
 		outFile.write(str(dataLabel) + "\n")
