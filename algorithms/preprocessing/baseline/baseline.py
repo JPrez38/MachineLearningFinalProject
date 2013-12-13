@@ -16,7 +16,7 @@ def printUsageAndExit(error):
 
 	print "Usage: baseline.py [trainFile] [testFile] [options (optional)]"
 	print "  Options:"
-
+	print "    --error-margin #         Set error-margin for accuracy evaluation"
 	sys.exit()
 #--------------------------------------------------------------------------
 
@@ -31,13 +31,31 @@ def checkArgs():
 	except:
 		self.printUsageAndExit("Unable to open designated train or test file.")
 
-	return dataReader,testReader
+	if "--error-margin" in sys.argv:
+		try:
+			errorMargin = float(sys.argv[sys.argv.index("--error-margin")+1])
+		except:
+			printUsageAndExit("--error-margin must be a number")
+	else:
+		errorMargin = .5
+
+	return dataReader,testReader,errorMargin
 #--------------------------------------------------------------------------
 
 #get arguments
-dataReader,testReader = checkArgs()
+dataReader,testReader,errorMargin = checkArgs()
 
 keys,data,outs,actuals,pops = sup.constructData(dataReader)
 testKeys,testData,testOuts,testActuals,testPops = sup.constructData(testReader)
 
+npOuts = np.array(outs)
 
+predictions = [np.average(npOuts)] * len(outs)
+
+misses,error,totalError,totalErrorPercentile = sup.crunchTestResults(predictions,testOuts,errorMargin)
+
+#Print accuracy
+print "   ------------------------------------------------------------------------"
+print "   | Error Margin (Confidence Interval):           " + str(errorMargin)
+print "   | Baseline Accuracy (by predicting accuracy):   " + str(1-error)
+print "   ------------------------------------------------------------------------"
