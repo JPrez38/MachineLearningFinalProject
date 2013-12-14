@@ -12,6 +12,7 @@ def printUsageAndExit():
 	print "  Options:"
 	print "    --test-size #               The size of the generated testing set (default 300)"
 	print "    --random                    Will take vectors at random"
+	print "    --byyear 				   Cuts item by year"
 	sys.exit()
 #-----------------------------------------------------------------------------------------------------
 
@@ -36,6 +37,17 @@ else:
 random = True if "--random" in sys.argv else False
 
 
+byyear = False	
+if "--byyear" in sys.argv:
+	byyear = True
+	try:
+		splityear = int(sys.argv[sys.argv.index("--byyear")+1])
+	except:
+		printUsageAndExit()
+else:
+	splityear = 2000
+
+
 #------------------------------------------------------------------------------------------------------
 def constructData(reader):
 	data = []
@@ -46,6 +58,41 @@ def constructData(reader):
 	return deepcopy(data)
 #------------------------------------------------------------------------------------------------------
 
+def randombuild():
+	i=0
+	while i < testSize:
+		randIndex = rand.randint(0,len(data)-1)
+		if randIndex not in testVectorIndicesInOriginalData:
+			testData.append(data[randIndex])
+			testVectorIndicesInOriginalData.append(randIndex)
+			testFile.write(','.join(str(feature) for feature in data[randIndex]) + "\n")
+			i+=1
+		else:
+			continue
+
+	#write remaining to training testFile
+	for k in range(0,len(data)):
+		if k not in testVectorIndicesInOriginalData:
+			trainFile.write(','.join(str(feature) for feature in data[k]) + "\n")
+
+	trainFile.close()
+	testFile.close()
+
+def yearbuild():
+	for i,pt in enumerate(data):
+		if int(pt[1]) > splityear:
+			testData.append(data[i])
+			testVectorIndicesInOriginalData.append(i)
+			testFile.write(','.join(str(feature) for feature in data[i]) + "\n")
+
+	#write remaining to training testFile
+	for k in range(0,len(data)):
+		if k not in testVectorIndicesInOriginalData:
+			trainFile.write(','.join(str(feature) for feature in data[k]) + "\n")
+
+	trainFile.close()
+	testFile.close()
+
 data = constructData(reader)
 trainingData = []
 testData = []
@@ -53,21 +100,10 @@ testData = []
 testVectorIndicesInOriginalData = []
 
 #build test data
-i=0
-while i < testSize:
-	randIndex = rand.randint(0,len(data)-1)
-	if randIndex not in testVectorIndicesInOriginalData:
-		testData.append(data[randIndex])
-		testVectorIndicesInOriginalData.append(randIndex)
-		testFile.write(','.join(str(feature) for feature in data[randIndex]) + "\n")
-		i+=1
-	else:
-		continue
+if byyear:
+	yearbuild()
 
-#write remaining to training testFile
-for k in range(0,len(data)):
-	if k not in testVectorIndicesInOriginalData:
-		trainFile.write(','.join(str(feature) for feature in data[k]) + "\n")
+else:
+	randombuild()
 
-trainFile.close()
-testFile.close()
+
