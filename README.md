@@ -81,7 +81,7 @@ To determine the effectiveness of potential data clustering, dimensionality redu
 
 Clustering was rather successful, at least by regarding the three dimensional visualization of the PCA reduced clustered data, FIGURE 2.4.2.  However, to scry any interesting relationships within clusters, a new method of analysis (other than visualization) had to be developed.  As such, manually moving through the dataset, each country was given an Area Code, as follows:
           
-          0 : 'North America',
+         0 : 'North America',
    		 1 : 'Central America',
    		 2 : 'South America',
    		 3 : 'Western Europe',
