@@ -119,11 +119,10 @@ Before discussion effectiveness of specific algorithms, it is necessary to estab
  
 Feeding the predicted outputs and the actual outputs (both as percentages), the error computation method performs the following equation, where .
  
-	"Misses"=∑_(i=1)^N▒〖"Error" 〗_i  {█(1 if |"prediction" -"actual" |/"actual" >"error margin" @0 if |"prediction" -"actual" |/"actual" ≤"error margin" )┤	(2)
-
-	"Validation Error"="Misses" /|"data" | 	(3)
+	![alt tag](https://raw.github.com/JPrez38/MachineLearningFinalProject/master/writeupresources/misses.png)
  
 Thus, if the program returns “.8 accuracy, .5 error margin,” this can be interpreted as “80% of the predictions are accurate within a 50% confidence margin.”  Many of the included algorithms are accompanied by a graphing function, demonstrating the accuracy of iterations, and for k-fold cross validation, the accuracy over different values of k.
+
 3.2 Training & Testing
 For the best analytical use of error for each algorithm, standardized training and validation sets were formed by script. Giving the makeData.py script the complete data file as input, along with a validation set size (default 300), two new subsets of the original data file were created, named train.csv and test.csv. These were used for testing on all algorithms that required a training and validation set.
 
@@ -139,6 +138,10 @@ The Bayesian Regression operates much as a standard linear regression, with the 
 Because the data was so very limited (only a maximum of about 1450 datapoints before splitting into training and validation sets), cross validation seemed like a viable option for checking the linear model. Using the Bayesian Regression implemented in section 3.3.2, k-fold cross validation was added to the program’s capabilities.
 
 FIGURE 3.3.2 is a graphical display of all average cross-validation accuracies across multiple values of k.  As k increased, the accuracy increased, indicating that smaller validation sets did better overall.
+
+![alt tag](https://raw.github.com/JPrez38/MachineLearningFinalProject/master/writeupresources/kmeans.png)
+![alt tag](https://raw.github.com/JPrez38/MachineLearningFinalProject/master/writeupresources/crossval.png)
+
 3.3.4 Stochastic Subgradient Descent
 The original thought was that stochastic gradient descent would be a good model for predicting outputs, however, the same problems became apparent on gradient descent as all regression algorithms. Given the relatively small feature set, it was unable to adequately fit the data and proved to be an extremely poor predictor (around 32% accuracy with a 50% confidence interval) of future forecasts.
 3.3.5 Linear Woes
