@@ -119,7 +119,7 @@ Before discussion effectiveness of specific algorithms, it is necessary to estab
  
 Feeding the predicted outputs and the actual outputs (both as percentages), the error computation method performs the following equation, where .
  
-	![alt tag](https://raw.github.com/JPrez38/MachineLearningFinalProject/master/writeupresources/misses.png)
+![alt tag](https://raw.github.com/JPrez38/MachineLearningFinalProject/master/writeupresources/misses.png)
  
 Thus, if the program returns “.8 accuracy, .5 error margin,” this can be interpreted as “80% of the predictions are accurate within a 50% confidence margin.”  Many of the included algorithms are accompanied by a graphing function, demonstrating the accuracy of iterations, and for k-fold cross validation, the accuracy over different values of k.
 
