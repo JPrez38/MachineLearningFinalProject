@@ -38,18 +38,18 @@ The data consists of several features for each country.  Datapoints are keyed us
  
 Each datapoint contains the following features:
 
-·         Minimum age of marriage without parental consent (Female)
-·         Minimum age of marriage without parental consent (Male)
-·         Literacy Rate (Female)
-·         Literacy Rate (Male)
-·         Contraceptive Prevalence (Modern Methods)
-·         Contraceptive Prevalence (Any Method)
-·         Teen marriage Percentages (Female)
-·         Teen marriage Percentages (Male)
-·         Mean Marriage Age (Female)
-·         Mean Marriage Age (Male)
-·         Share of Labor Force (Female)
-·         Gender Ratio
+         ·         Minimum age of marriage without parental consent (Female)
+         ·         Minimum age of marriage without parental consent (Male)
+         ·         Literacy Rate (Female)
+         ·         Literacy Rate (Male)
+         ·         Contraceptive Prevalence (Modern Methods)
+         ·         Contraceptive Prevalence (Any Method)
+         ·         Teen marriage Percentages (Female)
+         ·         Teen marriage Percentages (Male)
+         ·         Mean Marriage Age (Female)
+         ·         Mean Marriage Age (Male)
+         ·         Share of Labor Force (Female)
+         ·         Gender Ratio
  
 The continuous output (classification) is recorded as column 14 in the dataset (comma delineated) and is
 ·         Teenage Births as a Percentage of Total Female Population ages 15-19
