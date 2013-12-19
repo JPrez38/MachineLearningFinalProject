@@ -3,13 +3,16 @@ MachineLearningFinalProject
 
 Predicting Teenage Birthrates in UN Countries
 Project Writeup
+
 Shonte Amato-Grill
+
 Jacob Preston
 
 I. Introduction
 A large portion of UN activity and funds are regularly spent on outreach programs to nations in dire need of assistance. Many of these are targeted towards high-density population areas with low average GDP per capita.  The UN decides upon such locales by gathering data on each of the countries, whenever possible, and analyzing the data to see where to, say, place a new school for young children.
  
 The particular need addressed in this project was teen pregnancy. Teenage births are a significant burden on the mother of the child and it will hinder her life much more than if she had been able to give birth several years later.  Each year, roughly 7.3 million girls give birth around the world. Problems persisting from teenage births are lack of education, inability to work and a reliance on men for sustenance. All of these diminish women’s rights and the quest toward equality amongst men and women.  Providing adequate resources for areas with high teenage birth rates could help to alleviate resulting difficulties in the region, stabilizing literacy rates, and male to female ratios in the labor force, to name two.
+
 1.1 Goals
 There is, however, a fundamental flaw in this method of outreach program: by the time a severe GDP/birth rate discrepancy is witnessed, the act of building a school to raise literacy rates (which generally are inversely proportional to the GDP/birth rate discrepancy) is retroactive.  The goal, as set out in the project proposal, is as follows:
 1.	to determine if there were predictive features in determining the teenage birth rates in UN countries (See Data Architecture, 2.1), and
