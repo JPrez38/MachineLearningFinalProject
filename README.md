@@ -79,6 +79,9 @@ Running the nearest neighbor algorithm allowed for 200 more data points to be ge
 2.4 Data Visualization via Clustering and PCA
 To determine the effectiveness of potential data clustering, dimensionality reduction was performed upon the complete dataset, and the results graphed by the first three principal components. FIGURE 2.4.1 demonstrates the unclustered data, visualized by these first three components.  Evidently, the data could quite nicely be clustered, at least into three clusters.
 
+![alt tag](https://raw.github.com/JPrez38/MachineLearningFinalProject/master/writeupresources/cluster_fig1.png)
+![alt tag](https://raw.github.com/JPrez38/MachineLearningFinalProject/master/writeupresources/cluster_fig2.png)
+
 Clustering was rather successful, at least by regarding the three dimensional visualization of the PCA reduced clustered data, FIGURE 2.4.2.  However, to scry any interesting relationships within clusters, a new method of analysis (other than visualization) had to be developed.  As such, manually moving through the dataset, each country was given an Area Code, as follows:
           
          0 : 'North America',
