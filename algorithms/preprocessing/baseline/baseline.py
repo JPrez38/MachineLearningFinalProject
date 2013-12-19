@@ -17,6 +17,9 @@ def printUsageAndExit(error):
 	print "Usage: baseline.py [trainFile] [testFile] [options (optional)]"
 	print "  Options:"
 	print "    --error-margin #         Set error-margin for accuracy evaluation"
+	print "    --computation #          Sets the type of baseline to generate"
+	print "          1 : Total Average"
+	print "          2 : Average Per Country"
 	sys.exit()
 #--------------------------------------------------------------------------
 
@@ -39,23 +42,58 @@ def checkArgs():
 	else:
 		errorMargin = .5
 
-	return dataReader,testReader,errorMargin
+	try:
+		comp = int(sys.argv[sys.argv.index("--computation")+1]) if "--computation" in sys.argv else 1
+	except:
+		printUsageAndExit("--computation must be a valid integer")
+
+	return dataReader,testReader,errorMargin,comp
 #--------------------------------------------------------------------------
 
 #get arguments
-dataReader,testReader,errorMargin = checkArgs()
+dataReader,testReader,errorMargin,comp = checkArgs()
 
 keys,data,outs,actuals,pops = sup.constructData(dataReader)
 testKeys,testData,testOuts,testActuals,testPops = sup.constructData(testReader)
 
 npOuts = np.array(outs)
 
-predictions = [np.average(npOuts)] * len(outs)
 
-misses,error,totalError,totalErrorPercentile = sup.crunchTestResults(predictions,testOuts,errorMargin)
+if comp == 1:
+	predictions = [np.average(npOuts)] * len(outs)
+	misses,error,totalError,totalErrorPercentile = sup.crunchTestResults(predictions,testOuts,errorMargin)
+
+elif comp == 2:
+	averages = {}
+	currentIndex = 0
+	currentSum = 0.0
+	numHolder = 0
+	for keyIndex,key in enumerate(keys):
+		if key[0] == keys[currentIndex][0]:
+			currentSum += outs[keyIndex]
+			numHolder += 1
+		else:
+			if numHolder > 0:
+				averages[key[0]] = float(currentSum)/float(numHolder)
+			else:
+				averages[key[0]] = outs[keyIndex]
+			currentIndex = keyIndex
+			currentSum = 0.0
+			numHolder = 0
+
+	print averages
+
+	#construct predictions
+	predictions = []
+	for key in keys:
+		predictions.append(averages[key[0]])
+
+	misses,error,totalError,totalErrorPercentile = sup.crunchTestResults(predictions,outs,errorMargin)
+
+
 
 #Print accuracy
 print "   ------------------------------------------------------------------------"
 print "   | Error Margin (Confidence Interval):           " + str(errorMargin)
-print "   | Baseline Accuracy (by predicting accuracy):   " + str(1-error)
+print "   | Baseline Accuracy:                            " + str(1-error)
 print "   ------------------------------------------------------------------------"

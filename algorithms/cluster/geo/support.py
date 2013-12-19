@@ -33,7 +33,7 @@ class GeoSupport(object):
 
 		# Data organization:
 		# Each country is an array within the data array that looks like:
-		# [[country, year], [features,...], [actual percentile], geo code, cluster id]
+		# [[country, year], [features,...], actual percentile, geo code, cluster id]
 
 		cluster = []
 
