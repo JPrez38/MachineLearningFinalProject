@@ -91,6 +91,8 @@ Clustering was rather successful, at least by regarding the three dimensional vi
    		 8 : 'South East Asia'
 NOTE: These codes were not used for clustering, and neither was output. Only features detailed in section 2.1 were used for clustering.
 
+![alt tag](https://github.com/JPrez38/MachineLearningFinalProject/blob/master/cluster1.png)
+
 It was now possible to take a more analytical look at the contents of each of the three clusters: by tallying up the number of datapoints from each area that fell into each cluster, it was possible to determine which countries were most similar.
 
 The analysis was much as would be expected: Most datapoints with the same Area Code fell into the same clusters.  ‘North America’ and ‘Western Europe’ fell largely together and so forth.
