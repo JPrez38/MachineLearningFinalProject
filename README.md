@@ -80,7 +80,8 @@ Running the nearest neighbor algorithm allowed for 200 more data points to be ge
 To determine the effectiveness of potential data clustering, dimensionality reduction was performed upon the complete dataset, and the results graphed by the first three principal components. FIGURE 2.4.1 demonstrates the unclustered data, visualized by these first three components.  Evidently, the data could quite nicely be clustered, at least into three clusters.
 
 Clustering was rather successful, at least by regarding the three dimensional visualization of the PCA reduced clustered data, FIGURE 2.4.2.  However, to scry any interesting relationships within clusters, a new method of analysis (other than visualization) had to be developed.  As such, manually moving through the dataset, each country was given an Area Code, as follows:
- 0 : 'North America',
+          
+          0 : 'North America',
    		 1 : 'Central America',
    		 2 : 'South America',
    		 3 : 'Western Europe',
@@ -89,9 +90,12 @@ Clustering was rather successful, at least by regarding the three dimensional vi
    		 6 : 'Middle East',
    		 7 : 'Asia',
    		 8 : 'South East Asia'
+
 NOTE: These codes were not used for clustering, and neither was output. Only features detailed in section 2.1 were used for clustering.
 
-![alt tag](https://raw.github.com/JPrez38/MachineLearningFinalProject/master/cluster1.png)
+![alt tag](https://raw.github.com/JPrez38/MachineLearningFinalProject/master/writeupresources/cluster1.png)
+![alt tag](https://raw.github.com/JPrez38/MachineLearningFinalProject/master/writeupresources/cluster2.png)
+![alt tag](https://raw.github.com/JPrez38/MachineLearningFinalProject/master/writeupresources/cluster3.png)
 
 It was now possible to take a more analytical look at the contents of each of the three clusters: by tallying up the number of datapoints from each area that fell into each cluster, it was possible to determine which countries were most similar.
 
