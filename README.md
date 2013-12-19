@@ -15,8 +15,10 @@ The particular need addressed in this project was teen pregnancy. Teenage births
 
 1.1 Goals
 There is, however, a fundamental flaw in this method of outreach program: by the time a severe GDP/birth rate discrepancy is witnessed, the act of building a school to raise literacy rates (which generally are inversely proportional to the GDP/birth rate discrepancy) is retroactive.  The goal, as set out in the project proposal, is as follows:
-      1.	to determine if there were predictive features in determining the teenage birth rates in UN countries (See Data Architecture, 2.1), and
-      2.	to construct an as-accurate-as-possible model across all UN countries, in an attempt to prove the viability of a method for “preemptive assessment” of potential outreach program locales.
+
+            1.	to determine if there were predictive features in determining the teenage birth rates in UN countries (See Data Architecture, 2.1), and
+            2.	to construct an as-accurate-as-possible model across all UN countries, in an attempt to prove the viability of a method for “preemptive assessment” of potential outreach program locales.
+            
 After taking a closer look at the data, it was decided, however, that a clustering sub problem could provide us with information about the countries as well. Countries were given an ID based on geographic local and then examined to see if clusters of regions would form based on our feature set. This could be used to determine different tiers of countries based on our data.
  
 As the project progressed, it became clear that the predictive models would be insufficient. There was enormous difficulty with the UN data sets as they not only had to be pieced together, but there existed significant data gaps and a general lack of features to be able to use any regression algorithms. They were found to have a wide range of error due to not being able to adequately fracture the data and that it would be a better prediction to simply guess at the future teen pregnancy rates using past averages for the country in question.
