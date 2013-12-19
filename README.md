@@ -58,6 +58,8 @@ Because of said process, however, and because the data was not uniformly entered
 
 Some of the best methods for filling gaps were found by examining the data and understanding the relationship of the feature in the current year to prior and future years that had filled out features. For example, minimum age for marriage without consent would not change year to year and thus could be filled out for all years for a particular country. 
 
+![alt tag](https://raw.github.com/JPrez38/MachineLearningFinalProject/master/writeupresources/gapfilling.png)
+
 For other features that had gaps but had two years filled out in the same country, it was easy to observe a linear relationship. It was decided that the best method for filling gaps, similar to those shown in FIGURE 2.2.1, was to create a non-learning algorithm that simply analyzed (within each country), entries that were non-empty and used the two to find a general pattern. For instance, it can be inferred by observing FIGURE 2.2.1 that the Mean Marriage Age (Male) between years 1987 and 1992 is increasing based on the two entries that are non-empty.  By this pattern, many of the missing feature values could be filled with minimal data distortion, leading to a larger (if slightly less accurate) dataset, and thusly, better predictive capability. FIGURE 2.2.2 demonstrates the same datapoints after patching (green cells are preexisting values, yellow are computed).
 
 There existed some limitations still to this method. For example, countries with only 1 entry of the particular feature could not be filled out linearly. This left many points still not filled in and thus had to be filled in via nearest neighbor patching or cut out entirely. 
