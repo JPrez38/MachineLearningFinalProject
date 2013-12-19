@@ -151,6 +151,8 @@ The RF algorithm is an ensemble method of regression or classification that util
 
 To prevent a RF regressor from overfitting, however, it is necessary to specify a maximum depth. FIGURE 3.4.1 is a plot of RF regressor’s returned accuracy as the maximum depth (x-axis) increased from 1 to 50. The best accuracy achieved was .92 at a max depth of 41 on the nearest-neighbor modified dataset.  It is simple to see that below a max-depth of 10, the RF regression drastically underfit the data.  At a maximum depth of 6 or lower, RF was generally no better than the linear regression attempts.  As the depth increased, however, so too did the VC-dimension of the model, and the accuracy increased to match.
 
+![alt tag](https://raw.github.com/JPrez38/MachineLearningFinalProject/master/writeupresources/randomforest.png)
+
 IV. Experimental Evaluation
 Analysis of accuracies across several different datasets.
 
@@ -163,14 +165,23 @@ nearestNeighbor_test.csv	  normal_test.csv        countries_test.csv
 As discussed in section 2.3, the first of the three datasets utilized a KNN algorithm to fill in gaps in the data. Analysis of the algorithms attempted upon the nearest neighbor dataset follows.
 
 This dataset provides more training data for fitting the model, but has been manipulated before model fitting.  This dataset may have decreased the accuracy of the linear models.  Another reason for the lower linear accuracy is likely the VC-dimension (See Linear Woes, 3.3.5): as the size of the dataset increases, it becomes increasingly difficult to effectively fit a linear model, given it’s small VC-dimension (namely, features + 1).
+
+![alt tag](https://raw.github.com/JPrez38/MachineLearningFinalProject/master/writeupresources/nearestneighbor.png)
+
 The larger amount of data, however, increased the prediction of the Random Forest method, indicating that the prediction power of the training set was not significantly reduced by the KNN method.
 
 4.1.2 Normal Dataset
 It was also discussed that performing the KNN data manipulation might decrease prediction accuracy. As such, the dataset without KNN manipulation was also attempted. The results follow.
+
+![alt tag](https://raw.github.com/JPrez38/MachineLearningFinalProject/master/writeupresources/normal.png)
+
 The linear models receive a better prediction accuracy using this smaller, un-KNN-modified dataset, likely due to the fewer number of datapoints present (See Linear Woes, 3.3.5). The Random Forest, however, obtained a lower accuracy, due to the decrease in training data.
 
 4.1.3 Hold-Out Countries
 A good way to test the key assumption was to train on certain countries, and use others as test data. As such, building off of the Normal Dataset (4.1.2) the Country Hold-Out dataset was tested on all algorithms, the results follow.
+
+![alt tag](https://raw.github.com/JPrez38/MachineLearningFinalProject/master/writeupresources/countryholdout.png)
+
 Interestingly, the Held-Out countries set performed rather badly across all algorithms, indicating that Assumption 1 did not hold true.  It seems training a model to all UN countries is an inadequate method for prediction in each.  This is discussed further in the Conclusion (Section 5).
 
 4.2 Discussion
