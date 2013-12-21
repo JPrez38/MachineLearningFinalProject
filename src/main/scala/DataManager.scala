@@ -16,7 +16,7 @@ object DataMerge {
 	val marriedAgeChangeAmount = 0.10122822640700432
 	val womensShareChangeAmount = 0.13282134532134532
 	val maleFemaleChangeAmount = 0.006712239642299642
-	def readCSV(csvFile: String) = {
+	def readCSV() = {
 		//addmorebirths()
 		//fixBrokenCountries()
 		loadCSV()
